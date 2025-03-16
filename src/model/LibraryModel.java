@@ -1,0 +1,149 @@
+// Part 3:
+// 
+
+package model;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class LibraryModel {
+	private List<Song> songs;
+	private List<Album> albums;
+	private List<Playlist> playlists;
+	private MusicStore musicStore;
+	
+	public LibraryModel(MusicStore musicStore) {
+		this.songs = new ArrayList<>();
+		this.albums = new ArrayList<>();
+		this.playlists = new ArrayList<>();
+		this.musicStore = musicStore;
+	}
+	
+	/*
+	 * Add methods to add song/album/playlist to Library
+	 */
+	
+	public boolean addSong(String songTitle, String artist) {
+		Song song = musicStore.getSong(songTitle, artist);
+		if (song != null && !songs.contains(song)) {
+			songs.add(song);
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean addAlbum(String albumTitle, String artist) {
+		Album album = musicStore.getAlbum(albumTitle, artist);
+		if (album != null && !albums.contains(album)) {
+			albums.add(album);
+		
+			for (Song song : album.getSongs()) {
+				if (!songs.contains(song)) {
+					songs.add(song);
+				}
+			}
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean addPlaylist(Playlist playlist) {
+	    if (playlist != null && !playlists.contains(playlist)) {
+	        playlists.add(playlist);
+	        return true;
+	    }
+	    return false;
+	}
+	
+	/*
+	 * Four search methods below to search Library for song/album by song/artist
+	 * One additional search method to search Playlist by name
+	 */
+	
+	public List<Song> searchSongByTitle(String title) {
+		return songs.stream()
+				.filter(song -> song.getSongTitle().equalsIgnoreCase(title))
+				.collect(Collectors.toList());
+	}
+	
+	public List<Album> searchAlbumByTitle(String title) {
+		return albums.stream()
+				.filter(album -> album.getAlbumTitle().equalsIgnoreCase(title))
+				.collect(Collectors.toList());
+	}
+	
+	public List<Song> searchSongByArtist(String artist) {
+		return songs.stream()
+				.filter(song -> song.getArtist().equalsIgnoreCase(artist))
+				.collect(Collectors.toList());
+	}
+	
+	public List<Album> searchAlbumByArtist(String artist) {
+		return albums.stream()
+				.filter(album -> album.getArtist().equalsIgnoreCase(artist))
+				.collect(Collectors.toList());
+	}
+	
+	public Playlist searchPlaylistByName(String name) {
+	    for (Playlist playlist : playlists) {
+	        if (playlist.getName().equalsIgnoreCase(name)) {
+	            return playlist;
+	        }
+	    }
+	    return null;
+	}
+	
+	/*
+	 * 6 getter methods to get information from Library data structures
+	 */
+	
+	public List<String> getSongTitles() {
+		List<String> songTitles = new ArrayList<>();
+		for (Song song : songs) {
+			songTitles.add(song.getSongTitle());
+			}
+		return songTitles;
+	}
+	
+	public List<Song> getSongs() {
+	    return new ArrayList<>(songs);
+	}
+	
+	public List<String> getAlbumTitles() {
+		List<String> albumTitles = new ArrayList<>();
+		for (Album album : albums) {
+			albumTitles.add(album.getAlbumTitle());
+		}
+		return albumTitles;
+	}
+	
+	public List<String> getArtists() {
+		List<String> artists = new ArrayList<>();
+		for (Song song : songs) {
+			String artist = song.getArtist();
+			if (!artists.contains(artist)) {
+				artists.add(artist);
+			}
+		}
+		return artists;
+	}
+	
+	public List<String> getPlaylistNames() {
+		List<String> playlistNames = new ArrayList<>();
+		for (Playlist playlist : playlists) {
+			playlistNames.add(playlist.getName());
+		}
+		return playlistNames;
+	}
+	
+	public List<String> getFavoriteSongs() {
+		List<String> favoriteSongs = new ArrayList<>();
+		for (Song song : songs) {
+			if (song.isFavorite()) {
+				favoriteSongs.add(song.getSongTitle());
+			}
+		}
+		return favoriteSongs;
+	}
+}

@@ -4,11 +4,13 @@ import model.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 import java.util.Scanner;
 
 public class UserInterface {
     private MusicStore musicStore;
+    private User currentUser;
     private LibraryModel libraryModel;
     private Scanner scanner;
 
@@ -25,7 +27,7 @@ public class UserInterface {
         this.scanner = new Scanner(System.in);
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NoSuchAlgorithmException {
         MusicStore musicStore = new MusicStore();       
 
         // Populate MusicStore with files
@@ -47,49 +49,124 @@ public class UserInterface {
     }
 
     /*
-     * Display the main menu and provide the user 7 options
-     * Each input will call a function to prompt further options
-     * The user can return to this Main Menu at any time
+	 * Landing page for user to login or create new account
      */
-    public void start() {
-        boolean running = true;
-        while (running) {
-            displayMainMenu();
-            String choice = scanner.nextLine();
-            switch (choice) {
-                case "1":
-                	System.out.println('\n');
-                    searchMusicStore();
-                    break;
-                case "2":
-                	System.out.println('\n');
-                    searchLibrary();
-                    break;
-                case "3":
-                	System.out.println('\n');
-                    addToLibrary();
-                    break;
-                case "4":
-                	System.out.println('\n');
-                    viewLibraryLists();
-                    break;
-                case "5":
-                	System.out.println('\n');
-                    managePlaylists();
-                    break;
-                case "6":
-                	System.out.println('\n');
-                    manageSongs();
-                    break;
-                case "7":
-                    System.out.println("Exiting...");
-                    running = false;
-                    break;
-                default:
-                    System.out.println(RED + "Invalid option. Please try again." + RESET);
-                    break;
-            }
-        }
+    public void start() throws NoSuchAlgorithmException {
+    	boolean programRunning = true; 
+        boolean loggedIn = false;
+        
+        while (programRunning) {
+        	while (!loggedIn) {
+	            System.out.println("=== Login Menu ===");
+	            System.out.println("1. Login");
+	            System.out.println("2. Create new account");
+	            System.out.println("3. Exit");
+	            System.out.print("Enter your choice (1-3): ");
+	            
+	            String choice = scanner.nextLine();
+	            switch (choice) {
+	                case "1":
+	                    System.out.print("Enter username: ");
+	                    String username = scanner.nextLine();
+	                    System.out.print("Enter password: ");
+	                    String password = scanner.nextLine();
+	                    File userFile = new File("users/" + username + ".txt");
+	                    if (userFile.exists()) {
+	                        User user = User.load(username, musicStore);
+	                        if (user != null && user.verifyPassword(password)) {
+	                            currentUser = user;
+	                            libraryModel = user.getLibraryModel();
+	                            loggedIn = true;
+	                            System.out.println("Login successful!");
+	                        } else {
+	                            System.out.println("Invalid username or password.");
+	                        }
+	                    } else {
+	                        System.out.println("Username not found.");
+	                    }
+	                    break;
+	                    
+	                case "2":
+	                    System.out.print("Enter new username: ");
+	                    String newUsername = scanner.nextLine();
+	                    File newUserFile = new File("users/" + newUsername + ".txt");
+	                    if (newUserFile.exists()) {
+	                        System.out.println("Username already exists.");
+	                    } else {
+	                        System.out.print("Enter new password: ");
+	                        String newPassword = scanner.nextLine();
+	                        try {
+	                            User newUser = new User(newUsername, newPassword, musicStore);
+	                            currentUser = newUser;
+	                            libraryModel = newUser.getLibraryModel();
+	                            newUser.save();
+	                            loggedIn = true;
+	                            System.out.println("Account created and logged in successfully.");
+	                        } catch (NoSuchAlgorithmException e) {
+	                            System.out.println("Error creating user: " + e.getMessage());
+	                        }
+	                    }
+	                    break;
+	                    
+	                case "3":
+	                    System.out.println("Exiting...");
+	                    if (currentUser != null) {
+	                        currentUser.save();
+	                    }
+	                    return;
+	                default:
+	                    System.out.println("Invalid option. Please try again.");
+	            }
+        	}
+    
+	    /*
+	    * Display the main menu and provide the user 7 options
+	    * Each input will call a function to prompt further options
+	    * The user can return to this Main Menu at any time
+	    */
+	    while (loggedIn && programRunning) {
+	        displayMainMenu();
+	        String choice = scanner.nextLine();
+	        switch (choice) {
+	            case "1":
+	            	System.out.println('\n');
+	                searchMusicStore();
+	                break;
+	            case "2":
+	            	System.out.println('\n');
+	                searchLibrary();
+	                break;
+	            case "3":
+	            	System.out.println('\n');
+	                addToLibrary();
+	                break;
+	            case "4":
+	            	System.out.println('\n');
+	                viewLibraryLists();
+	                break;
+	            case "5":
+	            	System.out.println('\n');
+	                managePlaylists();
+	                break;
+	            case "6":
+	            	System.out.println('\n');
+	                manageSongs();
+	                break;
+	            case "7":
+	                System.out.println("Saving...");
+	                if (currentUser != null) {
+	                    currentUser.save();
+	                }
+	                currentUser = null;
+	                libraryModel = null;
+	                loggedIn = false;
+	                break;
+	            default:
+	                System.out.println(RED + "Invalid option. Please try again." + RESET);
+	                break;
+	        	}
+	    	}
+	    }
     }
 
     private void displayMainMenu() {
@@ -101,7 +178,7 @@ public class UserInterface {
         System.out.println("4. View Library Lists");
         System.out.println("5. Manage Playlists");
         System.out.println("6. Manage Songs");
-        System.out.println("7. Exit\n");
+        System.out.println("7. Save and Logout\n");
         System.out.print("Enter your choice (1-7): ");
     }
 

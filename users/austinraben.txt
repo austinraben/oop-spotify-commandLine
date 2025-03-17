@@ -1,0 +1,9 @@
+[username]
+austinraben
+[salt]
+o0ZOXI/qKp/8taKrBF3V5Q==
+[hashed_password]
+gExLA0WDzw1I9t2FJuMOoP56/a1EnGWy3TYxeHFW6j0=
+[songs]
+[albums]
+[playlists]

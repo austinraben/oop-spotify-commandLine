@@ -95,7 +95,7 @@ public class LibraryModel {
 	}
 	
 	/*
-	 * 6 getter methods to get information from Library data structures
+	 * Getter methods to get information from Library data structures
 	 */
 	
 	public List<String> getSongTitles() {
@@ -109,6 +109,14 @@ public class LibraryModel {
 	public List<Song> getSongs() {
 	    return new ArrayList<>(songs);
 	}
+	
+    public List<Album> getAlbums() {
+        return new ArrayList<>(albums);
+    }
+
+    public List<Playlist> getPlaylists() {
+        return new ArrayList<>(playlists);
+    }
 	
 	public List<String> getAlbumTitles() {
 		List<String> albumTitles = new ArrayList<>();
@@ -146,4 +154,19 @@ public class LibraryModel {
 		}
 		return favoriteSongs;
 	}
+	
+	/*
+	 * Setters for loading User information (User.load())
+	 */
+    public void setSongs(List<Song> songs) {
+        this.songs = songs;
+    }
+
+    public void setAlbums(List<Album> albums) {
+        this.albums = albums;
+    }
+
+    public void setPlaylists(List<Playlist> playlists) {
+        this.playlists = playlists;
+    }
 }

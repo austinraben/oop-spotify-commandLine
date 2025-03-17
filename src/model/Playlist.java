@@ -60,4 +60,17 @@ public class Playlist {
         Playlist other = (Playlist) o;
         return name.equalsIgnoreCase(other.name);    
      }
+	
+	@Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(name).append(": ");
+        for (int i = 0; i < songs.size(); i++) {
+            sb.append(songs.get(i).getSongTitle());
+            if (i < songs.size() - 1) {
+                sb.append(", ");
+            }
+        }
+        return sb.toString();
+    }
 }

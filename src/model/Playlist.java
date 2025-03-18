@@ -61,6 +61,11 @@ public class Playlist {
         return name.equalsIgnoreCase(other.name);    
      }
 	
+	public void getSongList(List<Song> songList) {
+		songs.clear();
+		songs.addAll(songList);
+	}
+	
 	@Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

@@ -49,6 +49,14 @@ public class User {
         return libraryModel;
     }
 	
+	public byte[] getSalt() {
+        return salt.clone();
+    }
+
+    public byte[] getHashedPassword() {
+        return hashedPassword.clone();
+    }
+	
 	/*
 	 * Generate random 16 byte salt for passwords
 	 */

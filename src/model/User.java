@@ -103,7 +103,7 @@ public class User {
             for (Album album : libraryModel.getAlbums()) {
                 StringBuilder songList = new StringBuilder();
                 for (Song song : album.getSongs()) {
-                    songList.append(song.getSongTitle()).append(",").append(song.getArtist()).append(";");
+                    songList.append(song.getSongTitle()).append(",");
                 }
                 writer.println(album.getAlbumTitle() + "|" + album.getArtist() + "|" + album.getGenre() + "|" + 
                               album.getYear() + "|" + songList.toString());
@@ -159,7 +159,7 @@ public class User {
                             Rating rating = songParts[3].isEmpty() ? null : Rating.values()[Integer.parseInt(songParts[3]) - 1];
                             boolean favorite = Boolean.parseBoolean(songParts[4]);
                             Song song = new Song(songTitle, artist, albumTitleFromSong, rating, favorite);
-                            songMap.put(songTitle + "|" + artist, song);
+                            songMap.put(songTitle + "|" + artist, song); 
                             songs.add(song);
                             break;
                             
@@ -170,13 +170,10 @@ public class User {
                             String genre = albumParts[2];
                             String year = albumParts[3];
                             List<Song> albumSongs = new ArrayList<>();
-                            String[] aSongPairs = albumParts[4].split(";");
-                            for (String pair : aSongPairs) {
-                                if (!pair.isEmpty()) {
-                                    String[] songInfo = pair.split(",");
-                                    String sTitle = songInfo[0];
-                                    String sArtist = songInfo[1];
-                                    Song s = songMap.get(sTitle + "|" + sArtist);
+                            String[] aSongs = albumParts[4].split(",");
+                            for (String title : aSongs) {
+                                if (!title.isEmpty()) {
+                                    Song s = songMap.get(title + "|" + albumArtist); 
                                     if (s != null) {
                                         albumSongs.add(s);
                                     }

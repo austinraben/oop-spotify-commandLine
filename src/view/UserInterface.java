@@ -16,10 +16,12 @@ public class UserInterface {
 
     // ANSI color codes for enhanced UI (AI generated)
     private static final String RESET = "\u001B[0m";  // default text color
-    private static final String BLUE = "\u001B[34m";
-    private static final String GREEN = "\u001B[32m";
-    private static final String RED = "\u001B[31m";
-    private static final String YELLOW = "\u001B[33m";
+    private static final String CYAN = "\u001B[36m";  // input text
+    private static final String BLUE = "\u001B[34m";  // Sub-menu header 
+    private static final String MAGENTA = "\u001B[35m";  // list header 
+    private static final String GREEN = "\u001B[32m";  // success operation and login/main menus
+    private static final String YELLOW = "\u001B[33m";  // unsuccessful operation 
+    private static final String RED = "\u001B[31m";  // invalid input 
 
     public UserInterface(MusicStore musicStore, LibraryModel libraryModel) {
         this.musicStore = musicStore;
@@ -57,19 +59,20 @@ public class UserInterface {
         
         while (programRunning) {
         	while (!loggedIn) {
-	            System.out.println("=== Login Menu ===");
+	            System.out.println(GREEN + "=== Login Menu ===" + RESET);
 	            System.out.println("1. Login");
 	            System.out.println("2. Create new account");
 	            System.out.println("3. Exit");
 	            System.out.print("Enter your choice (1-3): ");
 	            
-	            String choice = scanner.nextLine();
+	            System.out.print(CYAN); String choice = scanner.nextLine(); System.out.print(RESET);
+	            
 	            switch (choice) {
 	                case "1":
 	                    System.out.print("Enter username: ");
-	                    String username = scanner.nextLine();
+	    	            System.out.print(CYAN); String username = scanner.nextLine(); System.out.print(RESET);
 	                    System.out.print("Enter password: ");
-	                    String password = scanner.nextLine();
+	    	            System.out.print(CYAN); String password = scanner.nextLine(); System.out.print(RESET);
 	                    File userFile = new File("users/" + username + ".txt");
 	                    if (userFile.exists()) {
 	                        User user = User.load(username, musicStore);
@@ -77,31 +80,32 @@ public class UserInterface {
 	                            currentUser = user;
 	                            libraryModel = user.getLibraryModel();
 	                            loggedIn = true;
-	                            System.out.println("Login successful!");
+	                            System.out.println(GREEN + "Login successful!" + RESET);
+	                            System.out.println("\n");
 	                        } else {
-	                            System.out.println("Invalid username or password.");
+	                            System.out.println(YELLOW + "Invalid username or password." + RESET);
 	                        }
 	                    } else {
-	                        System.out.println("Username not found.");
+	                        System.out.println(YELLOW + "Username not found." + RESET);
 	                    }
 	                    break;
 	                    
 	                case "2":
 	                    System.out.print("Enter new username: ");
-	                    String newUsername = scanner.nextLine();
+	    	            System.out.print(CYAN); String newUsername = scanner.nextLine(); System.out.print(RESET);
 	                    File newUserFile = new File("users/" + newUsername + ".txt");
 	                    if (newUserFile.exists()) {
-	                        System.out.println("Username already exists.");
+	                        System.out.println(YELLOW + "Username already exists." + RESET);
 	                    } else {
 	                        System.out.print("Enter new password: ");
-	                        String newPassword = scanner.nextLine();
+		    	            System.out.print(CYAN); String newPassword = scanner.nextLine(); System.out.print(RESET);
 	                        try {
 	                            User newUser = new User(newUsername, newPassword, musicStore);
 	                            currentUser = newUser;
 	                            libraryModel = newUser.getLibraryModel();
 	                            newUser.save();
 	                            loggedIn = true;
-	                            System.out.println("Account created and logged in successfully.");
+	                            System.out.println(GREEN + "Account created and logged in successfully." + RESET);
 	                        } catch (NoSuchAlgorithmException e) {
 	                            System.out.println("Error creating user: " + e.getMessage());
 	                        }
@@ -115,7 +119,7 @@ public class UserInterface {
 	                    }
 	                    return;
 	                default:
-	                    System.out.println("Invalid option. Please try again.");
+	                    System.out.println(RED + "Invalid option. Please try again." + RESET);
 	            }
         	}
     
@@ -126,34 +130,35 @@ public class UserInterface {
 	    */
 	    while (loggedIn && programRunning) {
 	        displayMainMenu();
-	        String choice = scanner.nextLine();
+            System.out.print(CYAN); String choice = scanner.nextLine(); System.out.print(RESET);
 	        switch (choice) {
 	            case "1":
-	            	System.out.println('\n');
+	            	System.out.println();
 	                searchMusicStore();
 	                break;
 	            case "2":
-	            	System.out.println('\n');
+	            	System.out.println();
 	                searchLibrary();
 	                break;
 	            case "3":
-	            	System.out.println('\n');
+	            	System.out.println();
 	                addToLibrary();
 	                break;
 	            case "4":
-	            	System.out.println('\n');
+	            	System.out.println();
 	                viewLibraryLists();
 	                break;
 	            case "5":
-	            	System.out.println('\n');
+	            	System.out.println();
 	                managePlaylists();
 	                break;
 	            case "6":
-	            	System.out.println('\n');
+	            	System.out.println();
 	                manageSongs();
 	                break;
 	            case "7":
 	                System.out.println("Saving...");
+	                System.out.println('\n');
 	                if (currentUser != null) {
 	                    currentUser.save();
 	                }
@@ -170,15 +175,15 @@ public class UserInterface {
     }
 
     private void displayMainMenu() {
-        System.out.println(BLUE + "Welcome to the Music Library System!" + RESET);
-        System.out.println(BLUE + "=== Main Menu ===" + RESET);
+        System.out.println(GREEN + "Welcome to the Music Library System!" + RESET);
+        System.out.println(GREEN + "=== Main Menu ===" + RESET);
         System.out.println("1. Search Music Store");
         System.out.println("2. Search Library");
         System.out.println("3. Add to Library");
         System.out.println("4. View Library Lists");
         System.out.println("5. Manage Playlists");
         System.out.println("6. Manage Songs");
-        System.out.println("7. Save and Logout\n");
+        System.out.println("7. Save and Logout");
         System.out.print("Enter your choice (1-7): ");
     }
 
@@ -193,35 +198,36 @@ public class UserInterface {
             System.out.println("2. Song by Artist");
             System.out.println("3. Album by Title");
             System.out.println("4. Album by Artist");
-            System.out.println("5. Back to Main Menu\n");
+            System.out.println("5. Back to Main Menu");
             System.out.print("Enter your choice (1-5): ");
-            String choice = scanner.nextLine();
+            System.out.print(CYAN); String choice = scanner.nextLine(); System.out.print(RESET);
             switch (choice) {
                 case "1":
                     System.out.print("Enter song title: ");
-                    String title = scanner.nextLine();
+    	            System.out.print(CYAN); String title = scanner.nextLine(); System.out.print(RESET);
                     List<Song> songsByTitle = musicStore.searchSongByTitle(title);
                     displaySongList(songsByTitle, "Songs Found");
                     break;
                 case "2":
                     System.out.print("Enter artist: ");
-                    String artist = scanner.nextLine();
+    	            System.out.print(CYAN); String artist = scanner.nextLine(); System.out.print(RESET);
                     List<Song> songsByArtist = musicStore.searchSongByArtist(artist);
                     displaySongList(songsByArtist, "Songs Found");
                     break;
                 case "3":
                     System.out.print("Enter album title: ");
-                    String albumTitle = scanner.nextLine();
+    	            System.out.print(CYAN); String albumTitle = scanner.nextLine(); System.out.print(RESET);
                     List<Album> albumsByTitle = musicStore.searchAlbumByTitle(albumTitle);
                     displayAlbumList(albumsByTitle, "Albums Found");
                     break;
                 case "4":
                     System.out.print("Enter artist: ");
-                    String albumArtist = scanner.nextLine();
+    	            System.out.print(CYAN); String albumArtist = scanner.nextLine(); System.out.print(RESET);
                     List<Album> albumsByArtist = musicStore.searchAlbumByArtist(albumArtist);
                     displayAlbumList(albumsByArtist, "Albums Found");
                     break;
                 case "5":
+                	System.out.println();
                     searching = false;
                     break;
                 default:
@@ -243,40 +249,40 @@ public class UserInterface {
             System.out.println("3. Album by Title");
             System.out.println("4. Album by Artist");
             System.out.println("5. Playlist by Name");
-            System.out.println("6. Back to Main Menu\n");
+            System.out.println("6. Back to Main Menu");
             System.out.print("Enter your choice (1-6): ");
-            String choice = scanner.nextLine();
+            System.out.print(CYAN); String choice = scanner.nextLine(); System.out.print(RESET);
             switch (choice) {
                 case "1":
                     System.out.print("Enter song title: ");
-                    String title = scanner.nextLine();
+                    System.out.print(CYAN); String title = scanner.nextLine(); System.out.print(RESET);
                     List<Song> songsByTitle = libraryModel.searchSongByTitle(title);
                     displaySongList(songsByTitle, "Songs Found in Library");
                     break;
                 case "2":
                     System.out.print("Enter artist: ");
-                    String artist = scanner.nextLine();
+                    System.out.print(CYAN); String artist = scanner.nextLine(); System.out.print(RESET);
                     List<Song> songsByArtist = libraryModel.searchSongByArtist(artist);
                     displaySongList(songsByArtist, "Songs Found in Library");
                     break;
                 case "3":
                     System.out.print("Enter album title: ");
-                    String albumTitle = scanner.nextLine();
+                    System.out.print(CYAN); String albumTitle = scanner.nextLine(); System.out.print(RESET);
                     List<Album> albumsByTitle = libraryModel.searchAlbumByTitle(albumTitle);
                     displayAlbumList(albumsByTitle, "Albums Found in Library");
                     break;
                 case "4":
                     System.out.print("Enter artist: ");
-                    String albumArtist = scanner.nextLine();
+                    System.out.print(CYAN); String albumArtist = scanner.nextLine(); System.out.print(RESET);
                     List<Album> albumsByArtist = libraryModel.searchAlbumByArtist(albumArtist);
                     displayAlbumList(albumsByArtist, "Albums Found in Library");
                     break;
                 case "5":
                     System.out.print("Enter playlist name: ");
-                    String playlistName = scanner.nextLine();
+                    System.out.print(CYAN); String playlistName = scanner.nextLine(); System.out.print(RESET);
                     Playlist playlist = libraryModel.searchPlaylistByName(playlistName);
                     if (playlist != null) {
-                        System.out.println(BLUE + "=== Playlist: " + playlist.getName() + " ===" + RESET);
+                        System.out.println(MAGENTA + "=== Playlist: " + playlist.getName() + " ===" + RESET);
                         List<Song> songs = playlist.getSongs();
                         for (int i = 0; i < songs.size(); i++) {
                             System.out.println((i + 1) + ". " + songs.get(i).getSongTitle() + " by " + songs.get(i).getArtist());
@@ -286,6 +292,7 @@ public class UserInterface {
                     }
                     break;
                 case "6":
+                	System.out.println();
                     searching = false;
                     break;
                 default:
@@ -305,14 +312,14 @@ public class UserInterface {
             System.out.println("1. Add Song");
             System.out.println("2. Add Album");
             System.out.println("3. Back to Main Menu");
-            System.out.print("Enter your choice (1-3): \n");
-            String choice = scanner.nextLine();
+            System.out.print("Enter your choice (1-3): ");
+            System.out.print(CYAN); String choice = scanner.nextLine(); System.out.print(RESET);
             switch (choice) {
                 case "1":
                     System.out.print("Enter song title: ");
-                    String songTitle = scanner.nextLine();
+                    System.out.print(CYAN); String songTitle = scanner.nextLine(); System.out.print(RESET);
                     System.out.print("Enter artist: ");
-                    String songArtist = scanner.nextLine();
+                    System.out.print(CYAN); String songArtist = scanner.nextLine(); System.out.print(RESET);
                     boolean songAdded = libraryModel.addSong(songTitle, songArtist);
                     if (songAdded) {
                         System.out.println(GREEN + "Song added to library successfully." + RESET);
@@ -322,9 +329,9 @@ public class UserInterface {
                     break;
                 case "2":
                     System.out.print("Enter album title: ");
-                    String albumTitle = scanner.nextLine();
+                    System.out.print(CYAN); String albumTitle = scanner.nextLine(); System.out.print(RESET);
                     System.out.print("Enter artist: ");
-                    String albumArtist = scanner.nextLine();
+                    System.out.print(CYAN); String albumArtist = scanner.nextLine(); System.out.print(RESET);
                     boolean albumAdded = libraryModel.addAlbum(albumTitle, albumArtist);
                     if (albumAdded) {
                         System.out.println(GREEN + "Album added to library successfully." + RESET);
@@ -333,6 +340,7 @@ public class UserInterface {
                     }
                     break;
                 case "3":
+                	System.out.println();
                     adding = false;
                     break;
                 default:
@@ -354,9 +362,9 @@ public class UserInterface {
             System.out.println("3. Albums");
             System.out.println("4. Playlists");
             System.out.println("5. Favorite Songs");
-            System.out.println("6. Back to Main Menu\n");
+            System.out.println("6. Back to Main Menu");
             System.out.print("Enter your choice (1-6): ");
-            String choice = scanner.nextLine();
+            System.out.print(CYAN); String choice = scanner.nextLine(); System.out.print(RESET);
             switch (choice) {
                 case "1":
                     List<String> songTitles = libraryModel.getSongTitles();
@@ -379,6 +387,7 @@ public class UserInterface {
                     displayList(favoriteSongs, "Favorite Songs in Library");
                     break;
                 case "6":
+                	System.out.println();
                     viewing = false;
                     break;
                 default:
@@ -398,13 +407,13 @@ public class UserInterface {
             System.out.println("1. Create New Playlist");
             System.out.println("2. Add Song to Playlist");
             System.out.println("3. Remove Song from Playlist");
-            System.out.println("4. Back to Main Menu\n");
+            System.out.println("4. Back to Main Menu");
             System.out.print("Enter your choice (1-4): ");
-            String choice = scanner.nextLine();
+            System.out.print(CYAN); String choice = scanner.nextLine(); System.out.print(RESET);
             switch (choice) {
                 case "1":
                     System.out.print("Enter playlist name: ");
-                    String playlistName = scanner.nextLine();
+                    System.out.print(CYAN); String playlistName = scanner.nextLine(); System.out.print(RESET);
                     Playlist newPlaylist = new Playlist(playlistName);
                     boolean playlistAdded = libraryModel.addPlaylist(newPlaylist);
                     if (playlistAdded) {
@@ -415,13 +424,13 @@ public class UserInterface {
                     break;
                 case "2":
                     System.out.print("Enter playlist name: ");
-                    String addPlaylistName = scanner.nextLine();
+                    System.out.print(CYAN); String addPlaylistName = scanner.nextLine(); System.out.print(RESET);
                     Playlist addPlaylist = libraryModel.searchPlaylistByName(addPlaylistName);
                     if (addPlaylist != null) {
                         System.out.print("Enter song title: ");
-                        String addSongTitle = scanner.nextLine();
+                        System.out.print(CYAN); String addSongTitle = scanner.nextLine(); System.out.print(RESET);
                         System.out.print("Enter artist: ");
-                        String addSongArtist = scanner.nextLine();
+                        System.out.print(CYAN); String addSongArtist = scanner.nextLine(); System.out.print(RESET);
                         List<Song> songsToAdd = libraryModel.searchSongByTitle(addSongTitle);
                         
                         Song songToAdd = null;
@@ -445,13 +454,13 @@ public class UserInterface {
                     break;
                 case "3":
                     System.out.print("Enter playlist name: ");
-                    String removePlaylistName = scanner.nextLine();
+                    System.out.print(CYAN); String removePlaylistName = scanner.nextLine(); System.out.print(RESET);
                     Playlist removePlaylist = libraryModel.searchPlaylistByName(removePlaylistName);
                     if (removePlaylist != null) {
                         System.out.print("Enter song title: ");
-                        String removeSongTitle = scanner.nextLine();
+                        System.out.print(CYAN); String removeSongTitle = scanner.nextLine(); System.out.print(RESET);
                         System.out.print("Enter artist: ");
-                        String removeSongArtist = scanner.nextLine();
+                        System.out.print(CYAN); String removeSongArtist = scanner.nextLine(); System.out.print(RESET);
                         List<Song> songsToRemove = libraryModel.searchSongByTitle(removeSongTitle);
                         
                         Song songToRemove = null;
@@ -473,6 +482,7 @@ public class UserInterface {
                     }
                     break;
                 case "4":
+                	System.out.println();
                     managing = false;
                     break;
                 default:
@@ -492,9 +502,9 @@ public class UserInterface {
             System.out.println("1. Mark Song as Favorite");
             System.out.println("2. Unmark Song as Favorite");
             System.out.println("3. Rate Song");
-            System.out.println("4. Back to Main Menu\n");
+            System.out.println("4. Back to Main Menu");
             System.out.print("Enter your choice (1-4): ");
-            String choice = scanner.nextLine();
+            System.out.print(CYAN); String choice = scanner.nextLine(); System.out.print(RESET);
             switch (choice) {
                 case "1":
                     markSongAsFavorite(true);
@@ -506,6 +516,7 @@ public class UserInterface {
                     rateSong();
                     break;
                 case "4":
+                	System.out.println();
                     managing = false;
                     break;
                 default:
@@ -521,9 +532,9 @@ public class UserInterface {
      */
     private void markSongAsFavorite(boolean favorite) {
         System.out.print("Enter song title: ");
-        String title = scanner.nextLine();
+        System.out.print(CYAN); String title = scanner.nextLine(); System.out.print(RESET);
         System.out.print("Enter artist: ");
-        String artist = scanner.nextLine();
+        System.out.print(CYAN); String artist = scanner.nextLine(); System.out.print(RESET);
         List<Song> songs = libraryModel.searchSongByTitle(title);
         
         Song song = null;
@@ -548,9 +559,9 @@ public class UserInterface {
      */
     private void rateSong() {
         System.out.print("Enter song title: ");
-        String title = scanner.nextLine();
+        System.out.print(CYAN); String title = scanner.nextLine(); System.out.print(RESET);
         System.out.print("Enter artist: ");
-        String artist = scanner.nextLine();
+        System.out.print(CYAN); String artist = scanner.nextLine(); System.out.print(RESET);
         List<Song> songs = libraryModel.searchSongByTitle(title);
         Song song = null;
       
@@ -564,7 +575,9 @@ public class UserInterface {
         if (song != null) {
             System.out.print("Enter rating (1-5): ");
             try {
+            	System.out.print(CYAN);
                 int ratingValue = Integer.parseInt(scanner.nextLine());
+                System.out.print(RESET);
                 if (ratingValue >= 1 && ratingValue <= 5) {
                     Rating rating = Rating.values()[ratingValue - 1];
                     song.setRating(rating);
@@ -591,7 +604,7 @@ public class UserInterface {
         if (songs.isEmpty()) {
             System.out.println(YELLOW + "No songs found." + RESET);
         } else {
-            System.out.println(BLUE + "=== " + header + " ===" + RESET);
+            System.out.println(MAGENTA + "=== " + header + " ===" + RESET);
             for (Song song : songs) {
                 System.out.println(song.toString());
             }
@@ -606,7 +619,7 @@ public class UserInterface {
         if (albums.isEmpty()) {
             System.out.println(YELLOW + "No albums found." + RESET);
         } else {
-            System.out.println(BLUE + "=== " + header + " ===" + RESET);
+            System.out.println(MAGENTA + "=== " + header + " ===" + RESET);
             for (Album album : albums) {
                 System.out.println(album.toString());
             }
@@ -621,7 +634,7 @@ public class UserInterface {
         if (items.isEmpty()) {
             System.out.println(YELLOW + "No items found." + RESET);
         } else {
-            System.out.println(BLUE + "=== " + header + " ===" + RESET);
+            System.out.println(MAGENTA + "=== " + header + " ===" + RESET);
             for (String item : items) {
                 System.out.println(item);
             }

@@ -13,7 +13,7 @@ public class Song {
 		this.artist = artist;
 		this.albumTitle = albumTitle;
 		this.rating = Optional.ofNullable(rating);
-		this.favorite = false;
+		this.favorite = favorite;
 	}
 
 	public String getSongTitle() {

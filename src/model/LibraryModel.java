@@ -12,12 +12,14 @@ public class LibraryModel {
 	private List<Album> albums;
 	private List<Playlist> playlists;
 	private MusicStore musicStore;
+	private SongTracker songTracker;
 	
 	public LibraryModel(MusicStore musicStore) {
 		this.songs = new ArrayList<>();
 		this.albums = new ArrayList<>();
 		this.playlists = new ArrayList<>();
 		this.musicStore = musicStore;
+		this.songTracker = new SongTracker();
 	}
 	
 	/*
@@ -98,6 +100,10 @@ public class LibraryModel {
 	 * Getter methods to get information from Library data structures
 	 */
 	
+	public SongTracker getSongTracker() {
+		return songTracker;
+	}
+	
 	public List<String> getSongTitles() {
 		List<String> songTitles = new ArrayList<>();
 		for (Song song : songs) {
@@ -153,6 +159,13 @@ public class LibraryModel {
 			}
 		}
 		return favoriteSongs;
+	}
+	
+	public List<Playlist> getAllPlaylistsForDisplay() {
+	    List<Playlist> allPlaylists = new ArrayList<>(playlists); 
+	    allPlaylists.add(songTracker.getRecentSongsPlaylist());   
+	    allPlaylists.add(songTracker.getFrequentSongsPlaylist());
+	    return allPlaylists;
 	}
 	
 	/*

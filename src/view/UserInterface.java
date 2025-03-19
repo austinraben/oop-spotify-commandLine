@@ -157,6 +157,10 @@ public class UserInterface {
 	                manageSongs();
 	                break;
 	            case "7":
+	            	System.out.println();
+	                playSong();
+	                break;
+	            case "8":
 	                System.out.println("Saving...");
 	                System.out.println('\n');
 	                if (currentUser != null) {
@@ -183,7 +187,8 @@ public class UserInterface {
         System.out.println("4. View Library Lists");
         System.out.println("5. Manage Playlists");
         System.out.println("6. Manage Songs");
-        System.out.println("7. Save and Logout");
+        System.out.println("7. Play Song");
+        System.out.println("8. Save and Logout");
         System.out.print("Enter your choice (1-7): ");
     }
 
@@ -379,8 +384,7 @@ public class UserInterface {
                     displayList(albumTitles, "Albums in Library");
                     break;
                 case "4":
-                    List<String> playlistNames = libraryModel.getPlaylistNames();
-                    displayList(playlistNames, "Playlists in Library");
+                    viewPlaylists();
                     break;
                 case "5":
                     List<String> favoriteSongs = libraryModel.getFavoriteSongs();
@@ -398,6 +402,45 @@ public class UserInterface {
     }
 
     /*
+     * Step 1) Option 4 from Main Menu (View Library Lists)
+     * Step 2) Option 4 (Playlists)
+     */
+    private void viewPlaylists() {
+        List<Playlist> allPlaylists = libraryModel.getAllPlaylistsForDisplay();
+        if (allPlaylists.isEmpty()) {
+            System.out.println(YELLOW + "No playlists found." + RESET);
+            
+        } else {
+            System.out.println(MAGENTA + "=== Playlists in Library ===" + RESET);
+            for (int i = 0; i < allPlaylists.size(); i++) {
+                System.out.println((i + 1) + ". " + allPlaylists.get(i).getName());
+            }
+            
+            System.out.print("Select a playlist to view (1-" + allPlaylists.size() + ") or 0 to go back: ");
+            System.out.print(CYAN); String playlistChoice = scanner.nextLine(); System.out.print(RESET);
+            
+            try {
+                int index = Integer.parseInt(playlistChoice);
+                if (index >= 1 && index <= allPlaylists.size()) {
+                    Playlist selectedPlaylist = allPlaylists.get(index - 1);
+                    
+                    System.out.println(MAGENTA + "=== Playlist: " + selectedPlaylist.getName() + " ===" + RESET);
+                    List<Song> songs = selectedPlaylist.getSongs();
+                    for (int j = 0; j < songs.size(); j++) {
+                        System.out.println((j + 1) + ". " + songs.get(j).getSongTitle() + " by " + songs.get(j).getArtist());
+                    }
+                    
+                } else if (index != 0) {
+                    System.out.println(RED + "Invalid selection." + RESET);
+                }
+                
+            } catch (NumberFormatException e) {
+                System.out.println(RED + "Invalid input. Please enter a number." + RESET);
+            }
+        }
+    }
+    
+    /*
      * Option 5 from Main Menu
      */
     private void managePlaylists() {
@@ -410,10 +453,15 @@ public class UserInterface {
             System.out.println("4. Back to Main Menu");
             System.out.print("Enter your choice (1-4): ");
             System.out.print(CYAN); String choice = scanner.nextLine(); System.out.print(RESET);
+            
             switch (choice) {
                 case "1":
                     System.out.print("Enter playlist name: ");
                     System.out.print(CYAN); String playlistName = scanner.nextLine(); System.out.print(RESET);
+                    if (playlistName.equalsIgnoreCase("Recent Songs") || playlistName.equalsIgnoreCase("Frequent Songs")) {
+                        System.out.println(YELLOW + "Cannot create a playlist with this name. It is reserved for automatic playlists." + RESET);
+                        break;
+                    }
                     Playlist newPlaylist = new Playlist(playlistName);
                     boolean playlistAdded = libraryModel.addPlaylist(newPlaylist);
                     if (playlistAdded) {
@@ -422,9 +470,15 @@ public class UserInterface {
                         System.out.println(YELLOW + "Playlist with that name already exists." + RESET);
                     }
                     break;
+                    
                 case "2":
                     System.out.print("Enter playlist name: ");
                     System.out.print(CYAN); String addPlaylistName = scanner.nextLine(); System.out.print(RESET);
+                    if (addPlaylistName.equalsIgnoreCase("Recent Songs") || addPlaylistName.equalsIgnoreCase("Frequent Songs")) {
+                        System.out.println(YELLOW + "Cannot modify automatic playlists (Recent Songs or Frequent Songs)." + RESET);
+                        break;
+                    }
+                    
                     Playlist addPlaylist = libraryModel.searchPlaylistByName(addPlaylistName);
                     if (addPlaylist != null) {
                         System.out.print("Enter song title: ");
@@ -434,7 +488,6 @@ public class UserInterface {
                         List<Song> songsToAdd = libraryModel.searchSongByTitle(addSongTitle);
                         
                         Song songToAdd = null;
-                        
                         for (Song s : songsToAdd) {
                             if (s.getArtist().equalsIgnoreCase(addSongArtist)) {
                                 songToAdd = s;
@@ -452,9 +505,15 @@ public class UserInterface {
                         System.out.println(YELLOW + "Playlist not found." + RESET);
                     }
                     break;
+                    
                 case "3":
                     System.out.print("Enter playlist name: ");
                     System.out.print(CYAN); String removePlaylistName = scanner.nextLine(); System.out.print(RESET);
+                    if (removePlaylistName.equalsIgnoreCase("Recent Songs") || removePlaylistName.equalsIgnoreCase("Frequent Songs")) {
+                        System.out.println(YELLOW + "Cannot modify automatic playlists (Recent Songs or Frequent Songs)." + RESET);
+                        break;
+                    }
+                    
                     Playlist removePlaylist = libraryModel.searchPlaylistByName(removePlaylistName);
                     if (removePlaylist != null) {
                         System.out.print("Enter song title: ");
@@ -480,11 +539,13 @@ public class UserInterface {
                     } else {
                         System.out.println(YELLOW + "Playlist not found." + RESET);
                     }
+                    
                     break;
                 case "4":
-                	System.out.println();
+                    System.out.println();
                     managing = false;
                     break;
+                    
                 default:
                     System.out.println(RED + "Invalid option. Please try again." + RESET);
                     break;
@@ -525,6 +586,34 @@ public class UserInterface {
             }
         }
     }
+    
+    /*
+     * Option 7 from Main Menu
+     */
+    private void playSong() {
+        System.out.println(BLUE + "=== Play Song ===" + RESET);
+        System.out.print("Enter song title: ");
+        System.out.print(CYAN); String songTitle = scanner.nextLine(); System.out.print(RESET);
+        System.out.print("Enter artist: ");
+        System.out.print(CYAN); String artist = scanner.nextLine(); System.out.print(RESET);
+
+        List<Song> songs = libraryModel.searchSongByTitle(songTitle);
+        Song songToPlay = null;
+        for (Song song : songs) {
+            if (song.getArtist().equalsIgnoreCase(artist)) {
+                songToPlay = song;
+                break;
+            }
+        }
+
+        if (songToPlay != null) {
+            libraryModel.getSongTracker().playSong(songToPlay);
+            System.out.println(GREEN + "Playing: " + songToPlay.getSongTitle() + " by " + songToPlay.getArtist() + RESET);
+        } else {
+            System.out.println(YELLOW + "Song not found in library." + RESET);
+        }
+    }
+
 
     /*
      * Step 1) Option 6 from Main Menu (Manage Songs)

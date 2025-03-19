@@ -1,9 +1,9 @@
 [username]
 austinraben
 [salt]
-vY0ralmQTQ9j1P5zyrkPRg==
+bBi1xZfkPSkrmu7sDioUPw==
 [hashed_password]
-V3uOI3/hG3ey1+X12dJ7lh1OWjKzLC6lt/laQtja2cc=
+6OSEVN7zGuBiUJfHXkwn4ie2p5SaHVYmrR2s7AQJt0k=
 [songs]
 Rolling in the Deep|Adele|21||false
 Rumour Has It|Adele|21||false
@@ -14,11 +14,11 @@ He Won't Go|Adele|21||false
 Take It All|Adele|21||false
 I'll Be Waiting|Adele|21||false
 One and Only|Adele|21||false
-Lovesong|Adele|21|4|true
+Lovesong|Adele|21||false
 Someone Like You|Adele|21||false
 I Found a Boy|Adele|21||false
-The Scientist|Coldplay|A Rush of Blood to the Head|2|false
+The Scientist|Coldplay|A Rush of Blood to the Head||false
 [albums]
 21|Adele|Pop|2011|Rolling in the Deep,Rumour Has It,Turning Tables,Don't You Remember,Set Fire to the Rain,He Won't Go,Take It All,I'll Be Waiting,One and Only,Lovesong,Someone Like You,I Found a Boy,
 [playlists]
-jam!|Lovesong,Adele;The Scientist,Coldplay;
+LisetteSongs|The Scientist,Coldplay;Rolling in the Deep,Adele;One and Only,Adele;

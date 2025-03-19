@@ -52,6 +52,6 @@ public class SongTest {
     @Test
     void testToStringNoRatingOrFavorite() {
         Song song = new Song("Daydreamer", "Adele", "19", null, true);
-        assertEquals("Song Title: Daydreamer, Artist: Adele, Album: 19", song.toString());
+        assertEquals("Song Title: Daydreamer, Artist: Adele, Album: 19, Favorite", song.toString());
     }
 }

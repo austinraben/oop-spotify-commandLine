@@ -10,6 +10,8 @@ import org.junit.platform.suite.api.Suite;
     PlaylistTest.class,
     MusicStoreTest.class,
     LibraryModelTest.class,
+    UserTest.class,
+    SongTrackerTest.class
 })
 public class AllTests {
 	// Annotations above handle all tests

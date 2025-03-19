@@ -7,13 +7,15 @@ public class Song {
 	private String albumTitle;
 	private Optional<Rating> rating; // 1-5
 	private boolean favorite;
+	private int playCount;
 	
 	public Song(String songTitle, String artist, String albumTitle, Rating rating, boolean favorite) {
 		this.songTitle = songTitle;
 		this.artist = artist;
 		this.albumTitle = albumTitle;
 		this.rating = Optional.ofNullable(rating);
-		this.favorite = false;
+		this.favorite = favorite;
+		this.playCount = 0;
 	}
 
 	public String getSongTitle() {
@@ -43,6 +45,15 @@ public class Song {
 	public void setFavorite(boolean favorite) {
 		this.favorite = favorite;
 	}
+	
+	public int getPlayCount() {
+		return playCount;
+	}
+	
+	public void incrementPlayCount() {
+		playCount++;
+	}
+	
 	
 	@Override
     public boolean equals(Object o) {

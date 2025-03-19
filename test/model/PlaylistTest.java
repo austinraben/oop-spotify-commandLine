@@ -72,4 +72,20 @@ public class PlaylistTest {
         Playlist playlist4 = new Playlist("OtherPlaylist");
         assertFalse(playlist3.equals(playlist4));
     }
+    
+    @Test
+    void testToString() {
+        Playlist playlist = new Playlist("MyPlaylist");
+        Song song1 = new Song("Song1", "Artist1", "Album1", null, false);
+        Song song2 = new Song("Song2", "Artist2", "Album2", null, false);
+        Song song3 = new Song("Song3", "Artist3", "Album3", null, false);
+        
+        playlist.addSong(song1);
+        playlist.addSong(song2);
+        playlist.addSong(song3);
+
+        String expected = "MyPlaylist: Song1, Song2, Song3";
+        String actual = playlist.toString();
+        assertEquals(expected, actual);
+    }
 }

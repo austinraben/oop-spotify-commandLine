@@ -52,6 +52,15 @@ public class Playlist {
 	public List<Song> getSongs() {
         return new ArrayList<>(songs);  
     }
+	/*
+	 *  code for song shuffling
+	 */
+	public List<Song> getShuffledSongs() {
+    	List<Song> shuffled = new ArrayList<>(songs);
+    	Collections.shuffle(shuffled);
+    	return shuffled;
+    	
+    }
 	
 	@Override
     public boolean equals(Object o) {

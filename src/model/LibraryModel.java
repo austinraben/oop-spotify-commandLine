@@ -182,4 +182,13 @@ public class LibraryModel {
     public void setPlaylists(List<Playlist> playlists) {
         this.playlists = playlists;
     }
+     /*
+     *  Code for shuffle
+     */
+    public List<Song> getShuffledSongs() {
+    	List<Song> shuffled = new ArrayList<>(songs);
+    	Collections.shuffle(shuffled);
+    	return shuffled;
+    	
+    }
 }

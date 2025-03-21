@@ -433,4 +433,39 @@ public class LibraryModelTest {
         assertEquals("Rolling in the Deep", sortedByRating.get(1).getSongTitle()); 
         assertEquals("The Scientist", sortedByRating.get(2).getSongTitle());      
     }
+    @Test
+    void testLibraryShuffle(){
+    	MusicStore store = new MusicStore();
+        populateAlbumMap(store);
+        LibraryModel library = new LibraryModel(store);
+
+        library.addSong("The Scientist","Coldplay");
+        library.addSong("Rolling in the Deep", "Adele");
+        library.addSong("Simple Things", "The Heavy");
+      
+        List<Song> originalSongs = library.getSongs();
+        List<Song> shuffledSongs = library.getShuffledSongs();
+        
+        assertEquals(originalSongs.size(), shuffledSongs.size());
+        assertTrue(shuffledSongs.containsAll(originalSongs));
+        assertFalse(originalSongs.equals(shuffledSongs));
+    }
+
+    @Test
+    void testPlaylistShuffle() {
+        MusicStore store = new MusicStore();
+        populateAlbumMap(store);
+        Playlist playlist = new Playlist("TestPlaylist");
+
+        playlist.addSong(store.getSong("The Scientist", "Coldplay"));
+        playlist.addSong(store.getSong("Rolling in the Deep", "Adele"));
+        playlist.addSong(new Song("Simple Things", "The Heavy", "The House That Dirt Built", null, false));
+
+        List<Song> originalSongs = playlist.getSongs();
+        List<Song> shuffledSongs = playlist.getShuffledSongs();
+        
+        assertEquals(originalSongs.size(), shuffledSongs.size());
+        assertTrue(shuffledSongs.containsAll(originalSongs));
+        assertFalse(originalSongs.equals(shuffledSongs));
+    }
 }

@@ -228,4 +228,13 @@ public class LibraryModel {
     		removeSong(song);
     	}
     }
+	/*
+	 *  code for song shuffling
+	 */
+	public List<Song> getShuffledSongs() {
+    	List<Song> shuffled = new ArrayList<>(songs);
+    	Collections.shuffle(shuffled);
+    	return shuffled;
+    	
+    }
 }

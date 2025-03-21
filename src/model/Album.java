@@ -40,8 +40,14 @@ public class Album {
 		return new ArrayList<>(songs);
 	}
 	
-	public void removeSong(Song song) {
-		songs.remove(song);
+	public void removeSong(String title, String artist) {
+		for(int i = 0; i< songs.size();i++) {
+			Song newSong = songs.get(i);
+			if(newSong.getSongTitle().equalsIgnoreCase(title) && newSong.getArtist().equalsIgnoreCase(artist)) {
+				songs.remove(i);
+				i--;	
+			}
+		}
 	}
 	
 	@Override

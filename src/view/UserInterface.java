@@ -105,7 +105,7 @@ public class UserInterface {
 	                            libraryModel = newUser.getLibraryModel();
 	                            newUser.save();
 	                            loggedIn = true;
-	                            System.out.println(GREEN + "Account created and logged in successfully." + RESET);
+	                            System.out.println(GREEN + "Account created and logged in successfully.\n\n" + RESET);
 	                        } catch (NoSuchAlgorithmException e) {
 	                            System.out.println("Error creating user: " + e.getMessage());
 	                        }
@@ -161,7 +161,11 @@ public class UserInterface {
 	                playSong();
 	                break;
 	            case "8":
-	                System.out.println("Saving...");
+	            	System.out.println();
+	            	viewSortedSongs();
+	            	break;
+	            case "9":
+	                System.out.println("Saving and logging out...");
 	                System.out.println('\n');
 	                if (currentUser != null) {
 	                    currentUser.save();
@@ -179,7 +183,7 @@ public class UserInterface {
     }
 
     private void displayMainMenu() {
-        System.out.println(GREEN + "Welcome to the Music Library System!" + RESET);
+        System.out.println(GREEN + "Welcome to the Austin and Lisette's Spotify Program!" + RESET);
         System.out.println(GREEN + "=== Main Menu ===" + RESET);
         System.out.println("1. Search Music Store");
         System.out.println("2. Search Library");
@@ -188,7 +192,8 @@ public class UserInterface {
         System.out.println("5. Manage Playlists");
         System.out.println("6. Manage Songs");
         System.out.println("7. Play Song");
-        System.out.println("8. Save and Logout");
+        System.out.println("8. View Sorted Songs");
+        System.out.println("9. Save and Logout");
         System.out.print("Enter your choice (1-7): ");
     }
 
@@ -613,6 +618,55 @@ public class UserInterface {
             System.out.println(YELLOW + "Song not found in library." + RESET);
         }
     }
+    
+    private void viewSortedSongs() {
+        boolean sorting = true;
+        while (sorting) {
+            System.out.println(BLUE + "=== View Sorted Songs ===" + RESET);
+            System.out.println("1. Sort by Title");
+            System.out.println("2. Sort by Artist");
+            System.out.println("3. Sort by Rating");
+            System.out.println("4. Back to Main Menu");
+            System.out.print("Enter your choice (1-4): ");
+            String choice = scanner.nextLine();
+            switch (choice) {
+                case "1":
+                    List<Song> songsByTitle = libraryModel.getSongsSortedByTitle();
+                    displaySortedSongList(songsByTitle, "Songs Sorted by Title");
+                    break;
+                case "2":
+                    List<Song> songsByArtist = libraryModel.getSongsSortedByArtist();
+                    displaySortedSongList(songsByArtist, "Songs Sorted by Artist");
+                    break;
+                case "3":
+                    List<Song> songsByRating = libraryModel.getSongsSortedByRating();
+                    displaySortedSongList(songsByRating, "Songs Sorted by Rating");
+                    break;
+                case "4":
+                    System.out.println();
+                    sorting = false;
+                    break;
+                default:
+                    System.out.println(RED + "Invalid option. Please try again." + RESET);
+                    break;
+            }
+        }
+    }  
+    
+    /*
+     * Helper method for Step 8 of Main Menu (View Sorted Songs)
+     */
+    private void displaySortedSongList(List<Song> songs, String header) {
+        System.out.println(MAGENTA + "=== " + header + " ===" + RESET);
+        if (songs.isEmpty()) {
+            System.out.println("No songs available.");
+        } else {
+            for (int i = 0; i < songs.size(); i++) {
+                System.out.println((i + 1) + ". " + songs.get(i));
+            }
+        }
+        System.out.println();
+    }
 
 
     /*
@@ -684,7 +738,7 @@ public class UserInterface {
             System.out.println(YELLOW + "Song not found in library." + RESET);
         }
     }
-
+    
     /*
      * Step 1) Option 1 or 2 from Main Menu (Search Music Store or Library)
      * Step 2) Option 1 or 2 (Search for Song(s) by song title or artist)
@@ -693,6 +747,7 @@ public class UserInterface {
         if (songs.isEmpty()) {
             System.out.println(YELLOW + "No songs found." + RESET);
         } else {
+        	System.out.println("Song Title, Artist, Album, Rating (Optional), Favorite?");
             System.out.println(MAGENTA + "=== " + header + " ===" + RESET);
             for (Song song : songs) {
                 System.out.println(song.toString());

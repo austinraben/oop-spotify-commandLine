@@ -4,6 +4,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -168,6 +169,23 @@ public class LibraryModel {
 	    return allPlaylists;
 	}
 	
+    public List<Song> getSongsSortedByTitle() {
+        List<Song> sortedList = new ArrayList<>(songs);
+        Collections.sort(sortedList, Song.titleFirstComparator());
+        return sortedList;
+    }
+
+    public List<Song> getSongsSortedByArtist() {
+        List<Song> sortedList = new ArrayList<>(songs);
+        Collections.sort(sortedList, Song.artistFirstComparator());
+        return sortedList;
+    }
+
+    public List<Song> getSongsSortedByRating() {
+        List<Song> sortedList = new ArrayList<>(songs);
+        Collections.sort(sortedList, Song.ratingFirstComparator());
+        return sortedList;
+    }
 	
 	/*
 	 * Setters for loading User information (User.load())

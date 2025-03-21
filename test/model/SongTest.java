@@ -43,15 +43,12 @@ public class SongTest {
 
     @Test
     void testToString() {
-        Song song = new Song("Daydreamer", "Adele", "19", null, true);
-        song.setRating(Rating.THREE);
-        song.setFavorite(true);
-        assertEquals("Song Title: Daydreamer, Artist: Adele, Album: 19, Rating: 3, Favorite", song.toString());
-    }
-    
-    @Test
-    void testToStringNoRatingOrFavorite() {
-        Song song = new Song("Daydreamer", "Adele", "19", null, true);
-        assertEquals("Song Title: Daydreamer, Artist: Adele, Album: 19, Favorite", song.toString());
+        Song song1 = new Song("Daydreamer", "Adele", "19", null, true);
+        song1.setRating(Rating.THREE);
+        song1.setFavorite(true);
+        assertEquals("Daydreamer by Adele from '19', rated 3/5, favorite!", song1.toString());
+        
+        Song song2 = new Song("Lovesong", "Adele", "21", null, false);
+        assertEquals("Lovesong by Adele from '21'", song2.toString());
     }
 }

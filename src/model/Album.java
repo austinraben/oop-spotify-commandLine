@@ -40,6 +40,10 @@ public class Album {
 		return new ArrayList<>(songs);
 	}
 	
+	public void removeSong(Song song) {
+		songs.remove(song);
+	}
+	
 	@Override
     public boolean equals(Object o) {
 		// check same instance

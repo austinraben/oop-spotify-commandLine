@@ -168,6 +168,7 @@ public class LibraryModel {
 	    return allPlaylists;
 	}
 	
+	
 	/*
 	 * Setters for loading User information (User.load())
 	 */
@@ -181,5 +182,26 @@ public class LibraryModel {
 
     public void setPlaylists(List<Playlist> playlists) {
         this.playlists = playlists;
+    }
+    
+    /*
+     * Removes Song or Album from library 
+     */
+    public void removeSong(Song song) {
+    	songs.remove(song);
+    	
+    	for(Album album: albums) {
+    		album.removeSong(song);
+    	}
+    	for(Playlist playlist: playlists) {
+    		playlist.removeSong(song);
+    	}
+    }
+    
+    public void removeAlbum(Album album) {
+    	albums.remove(album);
+    	for(Song song: album.getSongs()) {
+    		removeSong(song);
+    	}
     }
 }

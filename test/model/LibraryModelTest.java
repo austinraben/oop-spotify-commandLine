@@ -360,5 +360,77 @@ public class LibraryModelTest {
         assertEquals(0, albums.size());
     }
 
-       	
+    @Test
+    void testGetAllPlaylistsForDisplay() {
+        MusicStore store = new MusicStore();
+        populateAlbumMap(store);
+        LibraryModel library = new LibraryModel(store);
+        
+        List<Playlist> allPlaylists = library.getAllPlaylistsForDisplay();
+        assertEquals(2, allPlaylists.size());
+        assertEquals("Recent Songs", allPlaylists.get(0).getName());
+        assertEquals("Frequent Songs", allPlaylists.get(1).getName());
+    }
+    
+    @Test
+    void testGetSongsSortedByTitle() {
+        MusicStore store = new MusicStore();
+        populateAlbumMap(store);
+        LibraryModel library = new LibraryModel(store);
+        
+        library.addSong("Rolling in the Deep", "Adele");
+        library.addSong("Lovesong", "Adele");
+        library.addSong("The Scientist", "Coldplay");
+
+        List<Song> sortedByTitle = library.getSongsSortedByTitle();
+        assertEquals("Lovesong", sortedByTitle.get(0).getSongTitle());
+        assertEquals("Rolling in the Deep", sortedByTitle.get(1).getSongTitle());
+        assertEquals("The Scientist", sortedByTitle.get(2).getSongTitle());
+    }
+
+    @Test
+    void testGetSongsSortedByArtist() {
+        MusicStore store = new MusicStore();
+        populateAlbumMap(store);
+        LibraryModel library = new LibraryModel(store);
+        
+        library.addSong("Rolling in the Deep", "Adele");
+        library.addSong("Lovesong", "Adele");
+        library.addSong("The Scientist", "Coldplay");
+
+        List<Song> sortedByArtist = library.getSongsSortedByArtist();
+        assertEquals("Adele", sortedByArtist.get(0).getArtist());
+        assertEquals("Adele", sortedByArtist.get(1).getArtist());
+        assertEquals("Coldplay", sortedByArtist.get(2).getArtist());
+    }
+
+    @Test
+    void testGetSongsSortedByRating() {
+        MusicStore store = new MusicStore();
+        populateAlbumMap(store);
+        LibraryModel library = new LibraryModel(store);
+
+        library.addSong("Rolling in the Deep", "Adele");
+        library.addSong("Lovesong", "Adele");
+        library.addSong("The Scientist", "Coldplay");
+
+        List<Song> songs = library.getSongs();
+        Song rollingInTheDeep = null;
+        Song lovesong = null;
+        for (Song song : songs) {
+            if (song.getSongTitle().equals("Rolling in the Deep")) {
+                rollingInTheDeep = song;
+            } else if (song.getSongTitle().equals("Lovesong")) {
+                lovesong = song;
+            }
+        }
+
+        rollingInTheDeep.setRating(Rating.FIVE); 
+        lovesong.setRating(Rating.FOUR); 
+
+        List<Song> sortedByRating = library.getSongsSortedByRating();
+        assertEquals("Lovesong", sortedByRating.get(0).getSongTitle()); 
+        assertEquals("Rolling in the Deep", sortedByRating.get(1).getSongTitle()); 
+        assertEquals("The Scientist", sortedByRating.get(2).getSongTitle());      
+    }
 }

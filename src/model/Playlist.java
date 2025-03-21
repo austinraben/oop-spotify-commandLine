@@ -39,6 +39,15 @@ public class Playlist {
 	public void removeSong(Song song) {
 		songs.remove(song);
 	}
+	public void removeSongFromLibrary(String title, String artist) {
+		for(int i = 0; i< songs.size();i++) {
+			Song newSong = songs.get(i);
+			if(newSong.getSongTitle().equalsIgnoreCase(title) && newSong.getArtist().equalsIgnoreCase(artist)) {
+				songs.remove(i);
+				i--;	
+			}
+		}
+	}
 	
 	public List<Song> getSongs() {
         return new ArrayList<>(songs);  

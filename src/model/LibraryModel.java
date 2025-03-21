@@ -206,14 +206,20 @@ public class LibraryModel {
      * Removes Song or Album from library 
      */
     public void removeSong(Song song) {
-    	songs.remove(song);
-    	
-    	for(Album album: albums) {
-    		album.removeSong(song);
+    	for(int i = 0; i < songs.size(); i++) {
+    		Song newSong = songs.get(i);
+    		if (newSong.getSongTitle().equalsIgnoreCase(song.getSongTitle()) && 
+    		newSong.getArtist().equalsIgnoreCase(song.getArtist())){
+    			songs.remove(i);
+    			i--;
+    		}
     	}
-    	for(Playlist playlist: playlists) {
-    		playlist.removeSong(song);
-    	}
+    	for (Playlist playlist : playlists) {
+            playlist.removeSongFromLibrary(song.getSongTitle(), song.getArtist());
+        }
+    	for (Album album : albums) {
+            album.removeSong(song.getSongTitle(), song.getArtist());
+        }
     }
     
     public void removeAlbum(Album album) {

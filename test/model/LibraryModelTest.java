@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LibraryModelTest {
@@ -280,4 +281,84 @@ public class LibraryModelTest {
         assertFalse(favorites.contains("The Cave"));
         assertFalse(song3.isFavorite());
     }
+    
+    @Test
+    void testRemoveSong() {
+        MusicStore store = new MusicStore();
+        populateAlbumMap(store);
+        LibraryModel library = new LibraryModel(store);
+        
+        library.addSong("Rolling in the Deep", "Adele");
+        library.addAlbum("21", "Adele");
+        List<Song> librarySongs = library.searchSongByTitle("Rolling in the Deep"); 
+        
+        Song songToBeRemoved = librarySongs.get(0);
+        
+        Playlist playlist = new Playlist("New Playlist");
+        playlist.addSong(songToBeRemoved);
+        
+        library.addPlaylist(playlist);
+        library.removeSong(songToBeRemoved);
+        
+        assertTrue(library.searchSongByTitle("Rolling in the Deep").isEmpty()); 
+        
+        assertFalse(playlist.getSongs().contains(songToBeRemoved));
+        
+        List<Album> albumInfo = library.searchAlbumByTitle("21");
+        assertFalse(albumInfo.get(0).getSongs().contains(songToBeRemoved)); 
+        
+    }
+    @Test
+    void testRemoveSongLibrary() {
+        MusicStore store = new MusicStore(); 
+        populateAlbumMap(store);
+        LibraryModel library = new LibraryModel(store);
+        
+        Song song = new Song("Rolling in the Deep", "Adele", "21", null, false);
+        library.removeSong(song);
+        List<Song> songs = library.getSongs(); 
+        assertEquals(0, songs.size());
+    }
+    
+    @Test
+    void testRemoveAlbum() {
+        MusicStore store = new MusicStore();
+        populateAlbumMap(store);
+        LibraryModel library = new LibraryModel(store);
+        
+        library.addAlbum("21", "Adele");
+        List<Album> initialAlbums = library.searchAlbumByTitle("21");
+        assertEquals(1, initialAlbums.size());
+        Album albumToRemove = initialAlbums.get(0);
+        Playlist playlist = new Playlist("New Playlist");
+        List<Song> allSongs = albumToRemove.getSongs();
+        for (Song song : allSongs) {
+            playlist.addSong(song);
+        }
+        library.addPlaylist(playlist);
+        assertEquals(allSongs.size(), library.getSongs().size()); 
+        assertEquals(allSongs.size(), playlist.getSongs().size());
+        library.removeAlbum(albumToRemove);
+        List<Album> albumList = library.searchAlbumByTitle("21");
+        assertTrue(albumList.isEmpty());
+        List<Song> songList = library.getSongs();
+        assertTrue(songList.isEmpty());
+        assertTrue(playlist.getSongs().isEmpty());
+    }
+    	
+    @Test
+    void testRemoveAlbumLibrary() {
+        MusicStore store = new MusicStore();
+        populateAlbumMap(store);
+        LibraryModel library = new LibraryModel(store);
+        
+        List<Song> songs = new ArrayList<>();
+        songs.add(new Song("Rolling in the Deep", "Adele", "21", null, false));
+        Album albumToRemove = new Album("21", "Adele", "pop", "2011", songs);
+        library.removeAlbum(albumToRemove);
+        List<Album> albums = library.getAlbums();
+        assertEquals(0, albums.size());
+    }
+
+       	
 }

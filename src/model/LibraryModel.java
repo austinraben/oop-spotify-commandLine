@@ -25,15 +25,45 @@ public class LibraryModel {
 	
 	/*
 	 * Add methods to add song/album/playlist to Library
+	 * Added to addSong so that It can also return album information
 	 */
 	
 	public boolean addSong(String songTitle, String artist) {
 		Song song = musicStore.getSong(songTitle, artist);
 		if (song != null && !songs.contains(song)) {
 			songs.add(song);
+			String albumTitle = song.getAlbumTitle();
+			if (albumTitle != null) {
+				Album libraryAlbum = libraryAlbumByTitle(albumTitle);
+	            if (libraryAlbum == null) {
+	  
+	                List<Song> albumSongs = new ArrayList<>();
+	                albumSongs.add(song);
+	                Album originalAlbum = musicStore.getAlbum(albumTitle, artist);
+	                if (originalAlbum != null) {
+	                    libraryAlbum = new Album(originalAlbum.getAlbumTitle(), originalAlbum.getArtist(),originalAlbum.getGenre(), String.valueOf(originalAlbum.getYear()), albumSongs);
+	                    albums.add(libraryAlbum);
+	                }
+	            } 
+	            else {
+	            	
+	                if (!libraryAlbum.getSongs().contains(song)) {
+	                    libraryAlbum.getSongs().add(song);
+	                }
+	            }
+			}
 			return true;
 		}
 		return false;
+	}
+	
+	private Album libraryAlbumByTitle(String title) {
+		for(Album album: albums) {
+			if(album.getAlbumTitle().equalsIgnoreCase(title)) {
+				return album;
+			}
+		}
+		return null; 
 	}
 	
 	public boolean addAlbum(String albumTitle, String artist) {
@@ -95,6 +125,58 @@ public class LibraryModel {
 	        }
 	    }
 	    return null;
+	}
+	/*
+	 * NEW searchSongsByGenre method for part f
+	 */
+	public List<Song> searchSongsByGenre(String genre){
+		List<Song> genreList = new ArrayList<>();
+		String genreTitle = genre.toUpperCase();
+		for(Song song : songs) {
+			String albumTitle = song.getAlbumTitle();
+			if(albumTitle != null) {
+				Album album = musicStore.getAlbum(albumTitle, song.getArtist());
+				if (album != null) {
+					String songGenre = album.getGenre().toUpperCase();
+				
+                    switch (genreTitle) {
+                        case "POP":
+                            if (songGenre.equals("POP")) {
+                                genreList.add(song);
+                            }
+                            break;
+                        case "ALTERNATIVE":
+                            if (songGenre.equals("ALTERNATIVE")) {
+                                genreList.add(song);
+                            }
+                            break;
+                        case "COUNTRY":
+                            if (songGenre.equals("COUNTRY")) {
+                                genreList.add(song);
+                            }
+                            break;
+                        case "LATIN":
+                            if (songGenre.equals("LATIN")) {
+                                genreList.add(song);
+                            }
+                            break;
+                        case "ROCK":
+                            if (songGenre.equals("ROCK")) {
+                                genreList.add(song);
+                            }
+                            break;
+                        case "SINGER/SONGWRITER":
+                            if (songGenre.equals("SINGER/SONGWRITER")) {
+                                genreList.add(song);
+                            }
+                            break;
+                       default:
+                    	   break;
+                    }
+				}
+			}
+		}
+		return genreList;
 	}
 	
 	/*
@@ -169,23 +251,6 @@ public class LibraryModel {
 	    return allPlaylists;
 	}
 	
-    public List<Song> getSongsSortedByTitle() {
-        List<Song> sortedList = new ArrayList<>(songs);
-        Collections.sort(sortedList, Song.titleFirstComparator());
-        return sortedList;
-    }
-
-    public List<Song> getSongsSortedByArtist() {
-        List<Song> sortedList = new ArrayList<>(songs);
-        Collections.sort(sortedList, Song.artistFirstComparator());
-        return sortedList;
-    }
-
-    public List<Song> getSongsSortedByRating() {
-        List<Song> sortedList = new ArrayList<>(songs);
-        Collections.sort(sortedList, Song.ratingFirstComparator());
-        return sortedList;
-    }
 	
 	/*
 	 * Setters for loading User information (User.load())
@@ -228,13 +293,34 @@ public class LibraryModel {
     		removeSong(song);
     	}
     }
-	/*
-	 *  code for song shuffling
-	 */
-	public List<Song> getShuffledSongs() {
+    /*
+     *  Code for shuffle
+     */
+    public List<Song> getShuffledSongs() {
     	List<Song> shuffled = new ArrayList<>(songs);
     	Collections.shuffle(shuffled);
     	return shuffled;
     	
     }
+    /*
+     * Code for Album Information when searching a song
+     */
+    public Album getAlbumInformation(Song song) {
+    	if(song == null || song.getAlbumTitle() == null) {
+    		return null;
+    	}
+    	List<Album> albumFromSong = musicStore.searchAlbumByTitle(song.getAlbumTitle());
+    	if (albumFromSong.isEmpty()) {
+    		return null;
+    	}
+    	else {
+    		return albumFromSong.get(0);
+    	}
+    }
+    
+    public boolean albumIsInLibrary(Album album) {
+    	return albums.contains(album);
+    }
+    
+    
 }

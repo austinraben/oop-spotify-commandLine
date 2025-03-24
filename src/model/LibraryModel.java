@@ -1,11 +1,17 @@
-// Part 3:
-// 
+/*
+ * A User has a LibraryModel
+ * A LibraryModel has the following data structures:
+ *    - List<Song>, List<Album>, List<Playlist>
+ *          - Ensures encapsulation so that internal data structures are hidden
+ *    - ArrayList<>:
+ *          - Resizable array implemantion of list for data changes
+ */
 
 package model;
 
+import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 
 public class LibraryModel {
@@ -24,17 +30,17 @@ public class LibraryModel {
 	}
 	
 	/*
-	 * Add methods to add song/album/playlist to Library
-	 * Added to addSong so that It can also return album information
+	 * Add Song to LibraryModel given title and artist
+	 *   - Returns: true if successful, false is not found in MusicStore or already added
+	 * NEW: Add the song's album to the Album list
 	 */
-	
 	public boolean addSong(String songTitle, String artist) {
 		Song song = musicStore.getSong(songTitle, artist);
 		if (song != null && !songs.contains(song)) {
 			songs.add(song);
 			String albumTitle = song.getAlbumTitle();
 			if (albumTitle != null) {
-				Album libraryAlbum = libraryAlbumByTitle(albumTitle);
+				Album libraryAlbum = getLibraryAlbumByTitle(albumTitle);
 	            if (libraryAlbum == null) {
 	  
 	                List<Song> albumSongs = new ArrayList<>();
@@ -57,7 +63,7 @@ public class LibraryModel {
 		return false;
 	}
 	
-	private Album libraryAlbumByTitle(String title) {
+	private Album getLibraryAlbumByTitle(String title) {
 		for(Album album: albums) {
 			if(album.getAlbumTitle().equalsIgnoreCase(title)) {
 				return album;
@@ -66,6 +72,11 @@ public class LibraryModel {
 		return null; 
 	}
 	
+	/*
+	 * Add Album to LibraryModel given album title and artist
+	 * Also add all of the Songs in the corresponding album
+	 *   - Returns: true if successful, false is not found in MusicStore or already added
+	 */
 	public boolean addAlbum(String albumTitle, String artist) {
 		Album album = musicStore.getAlbum(albumTitle, artist);
 		if (album != null && !albums.contains(album)) {
@@ -81,6 +92,10 @@ public class LibraryModel {
 		return false;
 	}
 	
+	/*
+	 * Add Playlist to LibraryModel given playlist
+	 *   - Returns: true if successful, false is already added
+	 */
 	public boolean addPlaylist(Playlist playlist) {
 	    if (playlist != null && !playlists.contains(playlist)) {
 	        playlists.add(playlist);
@@ -90,8 +105,7 @@ public class LibraryModel {
 	}
 	
 	/*
-	 * Four search methods below to search Library for song/album by song/artist
-	 * One additional search method to search Playlist by name
+	 * Methods to search the LibraryModel for data information
 	 */
 	
 	public List<Song> searchSongByTitle(String title) {
@@ -126,9 +140,6 @@ public class LibraryModel {
 	    }
 	    return null;
 	}
-	/*
-	 * NEW searchSongsByGenre method for part f
-	 */
 	public List<Song> searchSongsByGenre(String genre){
 		List<Song> genreList = new ArrayList<>();
 		String genreTitle = genre.toUpperCase();
@@ -180,21 +191,9 @@ public class LibraryModel {
 	}
 	
 	/*
-	 * Getter methods to get information from Library data structures
+	 * Getter methods to get data from the LibraryModel
+	 *    - Maintains encapsulation by returning copies of data structures
 	 */
-	
-	public SongTracker getSongTracker() {
-		return songTracker;
-	}
-	
-	public List<String> getSongTitles() {
-		List<String> songTitles = new ArrayList<>();
-		for (Song song : songs) {
-			songTitles.add(song.getSongTitle());
-			}
-		return songTitles;
-	}
-	
 	public List<Song> getSongs() {
 	    return new ArrayList<>(songs);
 	}
@@ -202,10 +201,22 @@ public class LibraryModel {
     public List<Album> getAlbums() {
         return new ArrayList<>(albums);
     }
-
+    
     public List<Playlist> getPlaylists() {
         return new ArrayList<>(playlists);
     }
+    
+	public SongTracker getSongTracker() {
+		return songTracker;
+	}
+    
+	public List<String> getSongTitles() {
+		List<String> songTitles = new ArrayList<>();
+		for (Song song : songs) {
+			songTitles.add(song.getSongTitle());
+			}
+		return songTitles;
+	}
 	
 	public List<String> getAlbumTitles() {
 		List<String> albumTitles = new ArrayList<>();
@@ -244,6 +255,12 @@ public class LibraryModel {
 		return favoriteSongs;
 	}
 	
+    public List<Song> getShuffledSongs() {
+    	List<Song> shuffled = new ArrayList<>(songs);
+    	Collections.shuffle(shuffled);
+    	return shuffled;
+    }
+	
 	public List<Playlist> getAllPlaylistsForDisplay() {
 	    List<Playlist> allPlaylists = new ArrayList<>(playlists); 
 	    allPlaylists.add(songTracker.getRecentSongsPlaylist());   
@@ -257,61 +274,7 @@ public class LibraryModel {
 	    return allPlaylists;
 	}
 	
-	
-	/*
-	 * Setters for loading User information (User.load())
-	 */
-    public void setSongs(List<Song> songs) {
-        this.songs = songs;
-    }
-
-    public void setAlbums(List<Album> albums) {
-        this.albums = albums;
-    }
-
-    public void setPlaylists(List<Playlist> playlists) {
-        this.playlists = playlists;
-    }
-    
-    /*
-     * Removes Song or Album from library 
-     */
-    public void removeSong(Song song) {
-    	for(int i = 0; i < songs.size(); i++) {
-    		Song newSong = songs.get(i);
-    		if (newSong.getSongTitle().equalsIgnoreCase(song.getSongTitle()) && 
-    		newSong.getArtist().equalsIgnoreCase(song.getArtist())){
-    			songs.remove(i);
-    			i--;
-    		}
-    	}
-    	for (Playlist playlist : playlists) {
-            playlist.removeSongFromLibrary(song.getSongTitle(), song.getArtist());
-        }
-    	for (Album album : albums) {
-            album.removeSong(song.getSongTitle(), song.getArtist());
-        }
-    }
-    
-    public void removeAlbum(Album album) {
-    	albums.remove(album);
-    	for(Song song: album.getSongs()) {
-    		removeSong(song);
-    	}
-    }
-    /*
-     *  Code for shuffle
-     */
-    public List<Song> getShuffledSongs() {
-    	List<Song> shuffled = new ArrayList<>(songs);
-    	Collections.shuffle(shuffled);
-    	return shuffled;
-    	
-    }
-    /*
-     * Code for Album Information when searching a song
-     */
-    public Album getAlbumInformation(Song song) {
+    public Album getAlbumFromSong(Song song) {
     	if(song == null || song.getAlbumTitle() == null) {
     		return null;
     	}
@@ -323,15 +286,58 @@ public class LibraryModel {
     		return albumFromSong.get(0);
     	}
     }
-    
-    public boolean albumIsInLibrary(Album album) {
-    	return albums.contains(album);
+	
+	/*
+	 * Setters for LibraryModel data structures
+	 *    - Used in User's load() method
+	 *    - Maintains encapsulation by returning copies of data structures
+	 */
+    public void setSongs(List<Song> songs) {
+        this.songs = new ArrayList<>(songs);
+    }
+
+    public void setAlbums(List<Album> albums) {
+        this.albums = new ArrayList<>(albums);
+    }
+
+    public void setPlaylists(List<Playlist> playlists) {
+        this.playlists = new ArrayList<>(playlists);
     }
     
     /*
-     * NEW 3 methods creating playlists for favorite song, genre, and top rated
+     * Remove Song from LibraryModel and its data structrues
      */
+    public void removeSong(Song song) {
+    	for(int i = 0; i < songs.size(); i++) {
+    		Song newSong = songs.get(i);
+    		if (newSong.getSongTitle().equalsIgnoreCase(song.getSongTitle()) && 
+    		newSong.getArtist().equalsIgnoreCase(song.getArtist())){
+    			songs.remove(i);
+    			i--;
+    		}
+    	}
+    	for (Playlist playlist : playlists) {
+            playlist.removeSong(song.getSongTitle(), song.getArtist());
+        }
+    	for (Album album : albums) {
+            album.removeSong(song.getSongTitle(), song.getArtist());
+        }
+    }
     
+    /*
+     * Remove Album and its Songs from LibraryModel and its data structrues
+     */
+    public void removeAlbum(Album album) {
+    	albums.remove(album);
+    	for(Song song: album.getSongs()) {
+    		removeSong(song);
+    	}
+    }
+    
+    /*
+     * LA2: 
+     * Methods to create automatic playlists for favorite songs, genre (if >=10), and top rated (4-5)
+     */
     public Playlist getFavoriteSongsPlaylist(){
     	Playlist favorites = new Playlist("Favorite Songs");
     	for(Song song: songs) {
@@ -372,9 +378,9 @@ public class LibraryModel {
         return genrePlaylists;
     }
     
-    
     /*
-     * NEW: Sorting methods 
+     * LA2: 
+     * Methods to get sorted List of Songs by Song's characteristics
      */
     
     public List<Song> getSongsSortedByTitle() {
@@ -394,6 +400,4 @@ public class LibraryModel {
         Collections.sort(sortedList, Song.ratingFirstComparator());
         return sortedList;
     }
-    
-    
 }

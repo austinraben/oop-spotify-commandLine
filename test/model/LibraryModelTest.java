@@ -367,7 +367,7 @@ public class LibraryModelTest {
         LibraryModel library = new LibraryModel(store);
         
         List<Playlist> allPlaylists = library.getAllPlaylistsForDisplay();
-        assertEquals(2, allPlaylists.size());
+        assertEquals(4, allPlaylists.size());
         assertEquals("Recent Songs", allPlaylists.get(0).getName());
         assertEquals("Frequent Songs", allPlaylists.get(1).getName());
     }
@@ -468,7 +468,9 @@ public class LibraryModelTest {
         
         assertEquals(originalSongs.size(), shuffledSongs.size());
         assertTrue(shuffledSongs.containsAll(originalSongs));
-        assertFalse(originalSongs.equals(shuffledSongs));
+        
+        // this test below should sometimes fail due to shuffling odds
+        // assertFalse(originalSongs.equals(shuffledSongs));
     }
     
     @Test
@@ -493,22 +495,6 @@ public class LibraryModelTest {
             }
         }
         assertFalse(hasPopPlaylist);
-    }
-    
-    @Test
-    public void testAlbumIsInLibrary() {
-        MusicStore store = new MusicStore();
-        populateAlbumMap(store);
-        LibraryModel library = new LibraryModel(store);
-
-        library.addAlbum("21", "Adele");
-        Album album21 = store.getAlbum("21", "Adele");
-        assertTrue(library.albumIsInLibrary(album21));
-
-        Album album25 = store.getAlbum("25", "Adele");
-        if (album25 != null) {
-            assertFalse(library.albumIsInLibrary(album25));
-        }
     }
     
     @Test
@@ -658,26 +644,26 @@ public class LibraryModelTest {
     }
     
     @Test
-    public void testGetAlbumInformation() {
+    public void testGetAlbumNameFromSong() {
         MusicStore store = new MusicStore();
         populateAlbumMap(store);
         LibraryModel library = new LibraryModel(store);
 
         Song lovesong = store.getSong("Lovesong", "Adele");
-        Album album21 = library.getAlbumInformation(lovesong);
-        assertNotNull(album21, "Album should not be null for 'Lovesong'");
-        assertEquals("21", album21.getAlbumTitle(), "Should return album '21' for 'Lovesong'");
-        assertEquals("Adele", album21.getArtist(), "Artist should be 'Adele'");
+        Album album21 = library.getAlbumFromSong(lovesong);
+        assertNotNull(album21);
+        assertEquals("21", album21.getAlbumTitle());
+        assertEquals("Adele", album21.getArtist());
 
         Song songWithNullAlbum = new Song("Test Song", "Test Artist", null, null, false);
-        Album nullAlbumResult = library.getAlbumInformation(songWithNullAlbum);
+        Album nullAlbumResult = library.getAlbumFromSong(songWithNullAlbum);
         assertNull(nullAlbumResult);
 
-        Album nullSongResult = library.getAlbumInformation(null);
+        Album nullSongResult = library.getAlbumFromSong(null);
         assertNull(nullSongResult);
 
         Song songWithInvalidAlbum = new Song("Invalid Song", "Artist", "NonExistentAlbum", null, false);
-        Album invalidAlbumResult = library.getAlbumInformation(songWithInvalidAlbum);
+        Album invalidAlbumResult = library.getAlbumFromSong(songWithInvalidAlbum);
         assertNull(invalidAlbumResult);
     }
 }

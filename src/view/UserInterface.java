@@ -5,8 +5,8 @@ import model.*;
 import java.io.File;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 import java.util.Scanner;
+import java.util.List;
 
 public class UserInterface {
     private MusicStore musicStore;
@@ -817,11 +817,11 @@ public class UserInterface {
     }
     
     private void displayAlbumInformation(Song song) {
-        Album album = libraryModel.getAlbumInformation(song);
+        Album album = libraryModel.getAlbumFromSong(song);
         if (album != null) {
             System.out.println(MAGENTA + "=== Album Information for '" + song.getSongTitle() + "' ===" + RESET);
             System.out.println(album.toString());
-            if (libraryModel.albumIsInLibrary(album)) {
+            if (libraryModel.getAlbums().contains(album)) {
                 System.out.println(GREEN + "This album is already in your library." + RESET);
             } else {
                 System.out.println(YELLOW + "This album is not in your library." + RESET);

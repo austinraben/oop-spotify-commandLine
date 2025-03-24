@@ -1,6 +1,7 @@
 /*
  * LA2--User.java to create users and load user information
  */
+
 package model;
 
 import java.io.BufferedReader;

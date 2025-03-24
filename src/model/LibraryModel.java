@@ -248,6 +248,12 @@ public class LibraryModel {
 	    List<Playlist> allPlaylists = new ArrayList<>(playlists); 
 	    allPlaylists.add(songTracker.getRecentSongsPlaylist());   
 	    allPlaylists.add(songTracker.getFrequentSongsPlaylist());
+	    allPlaylists.add(getFavoriteSongsPlaylist());
+	    allPlaylists.add(getTopRatedPlaylist());
+	    List<Playlist> genrePlaylists = getGenrePlaylists();
+	    if (!genrePlaylists.isEmpty()) {
+	        allPlaylists.addAll(genrePlaylists);
+	    }	    
 	    return allPlaylists;
 	}
 	
@@ -326,7 +332,7 @@ public class LibraryModel {
      * NEW 3 methods creating playlists for favorite song, genre, and top rated
      */
     
-    public Playlist favoriteSongsPlaylist(){
+    public Playlist getFavoriteSongsPlaylist(){
     	Playlist favorites = new Playlist("Favorite Songs");
     	for(Song song: songs) {
     		boolean isRatedFive = song.getRating().isPresent() && song.getRating().get().getRatingValue() == 5;

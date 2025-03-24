@@ -132,6 +132,16 @@ public class UserInterface {
 	        displayMainMenu();
             System.out.print(CYAN); String choice = scanner.nextLine(); System.out.print(RESET);
 	        switch (choice) {
+            case "0":
+                System.out.println("Saving and logging out...");
+                System.out.println('\n');
+                if (currentUser != null) {
+                    currentUser.save();
+                }
+                currentUser = null;
+                libraryModel = null;
+                loggedIn = false;
+                break;
 	            case "1":
 	            	System.out.println();
 	                searchMusicStore();
@@ -164,16 +174,14 @@ public class UserInterface {
 	            	System.out.println();
 	            	viewSortedSongs();
 	            	break;
-	            case "9":
-	                System.out.println("Saving and logging out...");
-	                System.out.println('\n');
-	                if (currentUser != null) {
-	                    currentUser.save();
-	                }
-	                currentUser = null;
-	                libraryModel = null;
-	                loggedIn = false;
-	                break;
+	            case "9": 
+                    System.out.println();
+                    removeFromLibrary();
+                    break;
+                case "10": 
+                    System.out.println();
+                    shuffleSongs();
+                    break;
 	            default:
 	                System.out.println(RED + "Invalid option. Please try again." + RESET);
 	                break;
@@ -185,6 +193,7 @@ public class UserInterface {
     private void displayMainMenu() {
         System.out.println(GREEN + "Welcome to the Austin and Lisette's Spotify Program!" + RESET);
         System.out.println(GREEN + "=== Main Menu ===" + RESET);
+        System.out.println("0. Save and Logout");
         System.out.println("1. Search Music Store");
         System.out.println("2. Search Library");
         System.out.println("3. Add to Library");
@@ -193,8 +202,9 @@ public class UserInterface {
         System.out.println("6. Manage Songs");
         System.out.println("7. Play Song");
         System.out.println("8. View Sorted Songs");
-        System.out.println("9. Save and Logout");
-        System.out.print("Enter your choice (1-7): ");
+        System.out.println("9. Remove from Library");       
+        System.out.println("10. Shuffle Songs");           
+        System.out.print("Enter your choice (1-10): ");
     }
 
     /*
@@ -212,12 +222,26 @@ public class UserInterface {
             System.out.print("Enter your choice (1-5): ");
             System.out.print(CYAN); String choice = scanner.nextLine(); System.out.print(RESET);
             switch (choice) {
-                case "1":
-                    System.out.print("Enter song title: ");
-    	            System.out.print(CYAN); String title = scanner.nextLine(); System.out.print(RESET);
-                    List<Song> songsByTitle = musicStore.searchSongByTitle(title);
-                    displaySongList(songsByTitle, "Songs Found");
-                    break;
+            case "1":
+                System.out.print("Enter song title: ");
+                System.out.print(CYAN); String title = scanner.nextLine(); System.out.print(RESET);
+                List<Song> songsByTitle = musicStore.searchSongByTitle(title);
+                displaySongList(songsByTitle, "Songs Found");
+                if (!songsByTitle.isEmpty()) {
+                    System.out.print("Do you want to see album information for a song? (y/n): ");
+                    System.out.print(CYAN); String albumChoice = scanner.nextLine(); System.out.print(RESET);
+                    if (albumChoice.equalsIgnoreCase("y")) {
+                        System.out.print("Enter the song number: ");
+                        System.out.print(CYAN); int songIndex = Integer.parseInt(scanner.nextLine()) - 1; System.out.print(RESET);
+                        if (songIndex >= 0 && songIndex < songsByTitle.size()) {
+                            Song selectedSong = songsByTitle.get(songIndex);
+                            displayAlbumInformation(selectedSong);
+                        } else {
+                            System.out.println(RED + "Invalid song number." + RESET);
+                        }
+                    }
+                }
+                break;
                 case "2":
                     System.out.print("Enter artist: ");
     	            System.out.print(CYAN); String artist = scanner.nextLine(); System.out.print(RESET);
@@ -259,8 +283,9 @@ public class UserInterface {
             System.out.println("3. Album by Title");
             System.out.println("4. Album by Artist");
             System.out.println("5. Playlist by Name");
-            System.out.println("6. Back to Main Menu");
-            System.out.print("Enter your choice (1-6): ");
+            System.out.println("6. Songs by Genre");
+            System.out.println("7. Back to Main Menu");
+            System.out.print("Enter your choice (1-7): ");
             System.out.print(CYAN); String choice = scanner.nextLine(); System.out.print(RESET);
             switch (choice) {
                 case "1":
@@ -302,6 +327,12 @@ public class UserInterface {
                     }
                     break;
                 case "6":
+                    System.out.print("Enter genre: ");
+                    System.out.print(CYAN); String genre = scanner.nextLine(); System.out.print(RESET);
+                    List<Song> songsByGenre = libraryModel.searchSongsByGenre(genre);
+                    displaySongList(songsByGenre, "Songs Found in Genre: " + genre);
+                    break;
+                case "7":
                 	System.out.println();
                     searching = false;
                     break;
@@ -782,6 +813,137 @@ public class UserInterface {
             for (String item : items) {
                 System.out.println(item);
             }
+        }
+    }
+    
+    private void displayAlbumInformation(Song song) {
+        Album album = libraryModel.getAlbumInformation(song);
+        if (album != null) {
+            System.out.println(MAGENTA + "=== Album Information for '" + song.getSongTitle() + "' ===" + RESET);
+            System.out.println(album.toString());
+            if (libraryModel.albumIsInLibrary(album)) {
+                System.out.println(GREEN + "This album is already in your library." + RESET);
+            } else {
+                System.out.println(YELLOW + "This album is not in your library." + RESET);
+            }
+        } else {
+            System.out.println(YELLOW + "Album information not found for this song." + RESET);
+        }
+    }
+    
+    /*
+     * NEW Feature to remove songs or albums from library
+     */
+    private void removeFromLibrary() {
+        boolean removing = true;
+        while (removing) {
+            System.out.println(BLUE + "=== Remove from Library ===" + RESET);
+            System.out.println("1. Remove Song");
+            System.out.println("2. Remove Album");
+            System.out.println("3. Back to Main Menu");
+            System.out.print("Enter your choice (1-3): ");
+            System.out.print(CYAN); String choice = scanner.nextLine(); System.out.print(RESET);
+            switch (choice) {
+                case "1":
+                    System.out.print("Enter song title: ");
+                    System.out.print(CYAN); String songTitle = scanner.nextLine(); System.out.print(RESET);
+                    System.out.print("Enter artist: ");
+                    System.out.print(CYAN); String songArtist = scanner.nextLine(); System.out.print(RESET);
+                    Song songToRemove = musicStore.getSong(songTitle, songArtist);
+                    
+                    if (songToRemove != null && libraryModel.getSongs().contains(songToRemove)) {
+                        libraryModel.removeSong(songToRemove);
+                        System.out.println(GREEN + "Song removed from library successfully." + RESET);
+                    } else {
+                        System.out.println(YELLOW + "Song not found in the library." + RESET);
+                    }
+                    break;
+                    
+                case "2":
+                    System.out.print("Enter album title: ");
+                    System.out.print(CYAN); String albumTitle = scanner.nextLine(); System.out.print(RESET);
+                    System.out.print("Enter artist: ");
+                    System.out.print(CYAN); String albumArtist = scanner.nextLine(); System.out.print(RESET);
+                    Album albumToRemove = musicStore.getAlbum(albumTitle, albumArtist);
+                    if (albumToRemove != null && libraryModel.getAlbums().contains(albumToRemove)) {
+                        libraryModel.removeAlbum(albumToRemove);
+                        System.out.println(GREEN + "Album removed from library successfully." + RESET);
+                    } else {
+                        System.out.println(YELLOW + "Album not found in the library." + RESET);
+                    }
+                    break;
+                    
+                case "3":
+                    System.out.println();
+                    removing = false;
+                    break;
+                default:
+                    System.out.println(RED + "Invalid option. Please try again." + RESET);
+                    break;
+            }
+        }
+    }
+    
+    /*
+     * NEW feature to shuffle songs in library or playlist and display results
+     */
+    private void shuffleSongs() {
+        System.out.println(BLUE + "=== Shuffle Songs ===" + RESET);
+        System.out.println("1. Shuffle All Songs in Library");
+        System.out.println("2. Shuffle Songs in a Playlist");
+        System.out.println("3. Back to Main Menu");
+        System.out.print("Enter your choice (1-3): ");
+        System.out.print(CYAN); String choice = scanner.nextLine(); System.out.print(RESET);
+
+        switch (choice) {
+            case "1":
+                List<Song> librarySongs = libraryModel.getSongs();
+                if (librarySongs.isEmpty()) {
+                    System.out.println(YELLOW + "No songs in the library to shuffle." + RESET);
+                } else {
+                    System.out.println(MAGENTA + "=== Original Library Song List ===" + RESET);
+                    for (int i = 0; i < librarySongs.size(); i++) {
+                        System.out.println((i + 1) + ". " + librarySongs.get(i).getSongTitle() + " by " + librarySongs.get(i).getArtist());
+                    }
+                    List<Song> shuffledLibrarySongs = libraryModel.getShuffledSongs();
+                    System.out.println(MAGENTA + "=== Shuffled Library Song List ===" + RESET);
+                    for (int i = 0; i < shuffledLibrarySongs.size(); i++) {
+                        System.out.println((i + 1) + ". " + shuffledLibrarySongs.get(i).getSongTitle() + " by " + shuffledLibrarySongs.get(i).getArtist());
+                    }
+                }
+                break;
+
+            case "2":
+                System.out.print("Enter playlist name: ");
+                System.out.print(CYAN); String playlistName = scanner.nextLine(); System.out.print(RESET);
+                Playlist playlist = libraryModel.searchPlaylistByName(playlistName);
+                if (playlist == null) {
+                    System.out.println(YELLOW + "Playlist not found." + RESET);
+                } else {
+                    List<Song> playlistSongs = playlist.getSongs();
+                    if (playlistSongs.isEmpty()) {
+                        System.out.println(YELLOW + "No songs in the playlist to shuffle." + RESET);
+                    } else {
+                        System.out.println(MAGENTA + "=== Original Playlist: " + playlist.getName() + " ===" + RESET);
+                        for (int i = 0; i < playlistSongs.size(); i++) {
+                            System.out.println((i + 1) + ". " + playlistSongs.get(i).getSongTitle() + " by " + playlistSongs.get(i).getArtist());
+                        }
+                        List<Song> shuffledPlaylistSongs = playlist.getShuffledSongs();
+                        System.out.println(MAGENTA + "=== Shuffled Playlist: " + playlist.getName() + " ===" + RESET);
+                        for (int i = 0; i < shuffledPlaylistSongs.size(); i++) {
+                            System.out.println((i + 1) + ". " + shuffledPlaylistSongs.get(i).getSongTitle() + " by " + shuffledPlaylistSongs.get(i).getArtist());
+                        }
+                    }
+                }
+                break;
+
+            case "3":
+                System.out.println();
+                break;
+
+            default:
+                System.out.println(RED + "Invalid option. Please try again." + RESET);
+                break;
         }
     }
 }

@@ -1,9 +1,39 @@
 [username]
 austinraben
 [salt]
-mNiTtF6uFrlFE5nFwtJsZg==
+YbMCsZot+IZ+N5FOpcOsFQ==
 [hashed_password]
-mUTvrqzz82O/YT0l99pZud4hrMGoKncjwOQ7owXrs4E=
+TvOH/gwOKw7cIQmiIoczJJRYpy79LJBzm+WgTyABnHE=
 [songs]
+Daydreamer|Adele|19|1|false
+Best for Last|Adele|19||false
+Chasing Pavements|Adele|19||false
+Cold Shoulder|Adele|19||false
+Crazy for You|Adele|19||false
+Melt My Heart to Stone|Adele|19||false
+First Love|Adele|19||false
+Right as Rain|Adele|19||false
+Make You Feel My Love|Adele|19||false
+My Same|Adele|19||false
+Tired|Adele|19||false
+Hometown Glory|Adele|19||false
+Rolling in the Deep|Adele|21||false
+Lovesong|Adele|21||true
+Someone Like You|Adele|21|3|false
+Heavy for You|The Heavy|Sons||false
+The Thief|The Heavy|Sons||false
+Better as One|The Heavy|Sons||false
+Fire|The Heavy|Sons||false
+Fighting for the Same Thing|The Heavy|Sons||false
+Hurt Interlude|The Heavy|Sons||false
+Put the Hurt on Me|The Heavy|Sons||false
+Simple Things|The Heavy|Sons||false
+A Whole Lot of Love|The Heavy|Sons||false
+What Don't Kill You|The Heavy|Sons||false
+Burn Bright|The Heavy|Sons||false
 [albums]
+19|Adele|Pop|2008|Daydreamer,Best for Last,Chasing Pavements,Cold Shoulder,Crazy for You,Melt My Heart to Stone,First Love,Right as Rain,Make You Feel My Love,My Same,Tired,Hometown Glory,
+21|Adele|Pop|2011|Rolling in the Deep,
+Sons|The Heavy|Rock|2019|Heavy for You,The Thief,Better as One,Fire,Fighting for the Same Thing,Hurt Interlude,Put the Hurt on Me,Simple Things,A Whole Lot of Love,What Don't Kill You,Burn Bright,
 [playlists]
+jam!|Lovesong,Adele;Crazy for You,Adele;Someone Like You,Adele;

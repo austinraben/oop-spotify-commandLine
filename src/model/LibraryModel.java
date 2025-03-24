@@ -322,5 +322,72 @@ public class LibraryModel {
     	return albums.contains(album);
     }
     
+    /*
+     * NEW 3 methods creating playlists for favorite song, genre, and top rated
+     */
+    
+    public Playlist favoriteSongsPlaylist(){
+    	Playlist favorites = new Playlist("Favorite Songs");
+    	for(Song song: songs) {
+    		boolean isRatedFive = song.getRating().isPresent() && song.getRating().get().getRatingValue() == 5;
+    		if (song.isFavorite() || isRatedFive) {
+                favorites.addSong(song);
+            }
+        }
+        return favorites;
+    }
+    
+    public Playlist getTopRatedPlaylist() {
+        Playlist topRated = new Playlist("Top Rated");
+        for (Song song : songs) {
+            if (song.getRating().isPresent()) {
+                int ratingValue = song.getRating().get().getRatingValue();
+                if (ratingValue >= 4) {
+                    topRated.addSong(song);
+                }
+            }
+        }
+        return topRated;
+    }
+    
+    public List<Playlist> getGenrePlaylists() {
+        List<Playlist> genrePlaylists = new ArrayList<>();
+        String[] genres = {"POP", "ALTERNATIVE", "COUNTRY", "LATIN", "ROCK", "SINGER/SONGWRITER"};
+        for (String genre : genres) {
+            List<Song> genreSongs = searchSongsByGenre(genre);
+            if (genreSongs.size() >= 10) {
+                Playlist genrePlaylist = new Playlist(genre + " Playlist");
+                for (Song song : genreSongs) {
+                    genrePlaylist.addSong(song);
+                }
+                genrePlaylists.add(genrePlaylist);
+            }
+        }
+        return genrePlaylists;
+    }
+    
+    
+    /*
+     * NEW: Sorting methods 
+     */
+    
+    public List<Song> getSongsSortedByTitle() {
+        List<Song> sortedList = new ArrayList<>(songs);
+        Collections.sort(sortedList, Song.titleFirstComparator());
+        return sortedList;
+    }
+
+    public List<Song> getSongsSortedByArtist() {
+        List<Song> sortedList = new ArrayList<>(songs);
+        Collections.sort(sortedList, Song.artistFirstComparator());
+        return sortedList;
+    }
+
+    public List<Song> getSongsSortedByRating() {
+        List<Song> sortedList = new ArrayList<>(songs);
+        Collections.sort(sortedList, Song.ratingFirstComparator());
+        return sortedList;
+    }
+    
     
 }

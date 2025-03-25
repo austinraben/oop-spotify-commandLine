@@ -1,5 +1,3 @@
-// Part 3:
-
 package model;
 
 import java.util.ArrayList;
@@ -8,7 +6,7 @@ import java.util.List;
 
 public class Playlist {
 	private String name;
-	private ArrayList<Song> songs;
+	private List<Song> songs;
 	
 	public Playlist(String name) {
 		this.name = name;

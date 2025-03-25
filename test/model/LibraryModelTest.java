@@ -484,12 +484,12 @@ public class LibraryModelTest {
 
         List<Playlist> genrePlaylists = library.getGenrePlaylists();
         assertEquals(1, genrePlaylists.size());
-        assertEquals("ROCK Playlist", genrePlaylists.get(0).getName());
+        assertEquals("ROCK", genrePlaylists.get(0).getName());
         assertEquals(11, genrePlaylists.get(0).getSongs().size());
 
         boolean hasPopPlaylist = false;
         for (Playlist playlist : genrePlaylists) {
-            if (playlist.getName().equals("POP Playlist")) {
+            if (playlist.getName().equals("POP")) {
                 hasPopPlaylist = true;
                 break;
             }

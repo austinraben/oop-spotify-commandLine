@@ -5,6 +5,42 @@
  *          - Ensures encapsulation so that internal data structures are hidden
  *    - ArrayList<>:
  *          - Resizable array implemantion of list for data changes
+ *
+ *
+ * Encapsulation:
+ *     - Internal data structures are private and returns defensive copies through getters
+ *     - Any modifications are controlled through public methods
+ * Input Validation:
+ *     - addSong(), addAlbum(), addPlaylist():
+ *        - Verifies the item exists in MusicStore, returns true if success, false otherwise
+ *     - removeSong(), removeAlbum():
+ *         - Uses if-statements to check for matches before removal
+ * Avoidance of Anti-Patterns:
+ *     - Avoids 'God Class'
+ *     - Primitive Obsession - using appropriate types
+ *        - We use meaningful types like the Rating enum instead of plain integers for rating value
+ *     - Duplicated Code - 
+ *        - Overloaded removeSong to handle different situations in different contexts
+ *        - The frontend uses methods from the backend to prevent duplicated algorithms
+ *     - Temporary Field 
+ *        - we do not define instance variables unless they are consistently across the class
+ *     - Escaping References - 
+ *        - In all getter methods for lists, we return a copy instead of the original reference
+ * Design Patterns:
+ *     - Song: Uses 'Strategy' pattern to define different ways of sorting songs
+ *        - these Comparators are passed to Collections.sort() when sorting by title,artist,rating
+ *     - Each class has private instance variables and public methods
+ *     - Constructors make each class unique -- user has an overloaded constructor
+ *     - Classes are well-encapsulated
+ * Composition:
+ *     - Each User has a LibraryModel
+ *     - Each LibraryModel has the same MusicStore with the same HashMap of data read in
+ *     - Each LibraryModel has a SongTracker to track that User's played songs
+ *     - Each LibraryModel has a list of Songs, Albums, and Playlists unique to him/her
+ * No inheritance used--no need for an 'is a' relationship
+ * Polymorpishm 
+ *    - method overloading in the Playlist and Album class with removeSong()
+ *    - method overriding of Object's toString() and equals() in Song, Album, and Playlist
  */
 
 package model;
@@ -32,7 +68,7 @@ public class LibraryModel {
 	/*
 	 * Add Song to LibraryModel given title and artist
 	 *   - Returns: true if successful, false is not found in MusicStore or already added
-	 * NEW: Add the song's album to the Album list
+	 * LA2: Add the song's album to the Album list
 	 */
 	public boolean addSong(String songTitle, String artist) {
 		Song song = musicStore.getSong(songTitle, artist);
@@ -368,7 +404,7 @@ public class LibraryModel {
         for (String genre : genres) {
             List<Song> genreSongs = searchSongsByGenre(genre);
             if (genreSongs.size() >= 10) {
-                Playlist genrePlaylist = new Playlist(genre + " Playlist");
+                Playlist genrePlaylist = new Playlist(genre);
                 for (Song song : genreSongs) {
                     genrePlaylist.addSong(song);
                 }

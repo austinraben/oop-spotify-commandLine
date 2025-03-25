@@ -47,6 +47,10 @@ public class Song {
 		this.favorite = favorite;
 	}
 	
+	public void setPlayCount(int count) {
+	    this.playCount = count; 
+	}
+	
 	public int getPlayCount() {
 		return playCount;
 	}

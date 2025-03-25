@@ -40,6 +40,16 @@ public class Album {
 		return new ArrayList<>(songs);
 	}
 	
+	public void removeSong(String title, String artist) {
+		for(int i = 0; i< songs.size();i++) {
+			Song newSong = songs.get(i);
+			if(newSong.getSongTitle().equalsIgnoreCase(title) && newSong.getArtist().equalsIgnoreCase(artist)) {
+				songs.remove(i);
+				i--;	
+			}
+		}
+	}
+	
 	@Override
     public boolean equals(Object o) {
 		// check same instance

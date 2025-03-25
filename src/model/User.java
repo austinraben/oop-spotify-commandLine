@@ -1,6 +1,15 @@
 /*
  * LA2--User.java to create users and load user information
+ * 
+ * A User has the following data structures:
+ *    - String username
+ *    - byte[] for salt and hashedPassword
+ *        - byte arrays are compatiable with crytographic algorithms 
+ *        - generateSalt() uses SecureRandom() to generate a random, secure 16 byte array
+ *        - hashPassowrd(password, salt) uses MessageDigest's API to create a hashed password 
+ *           - This hashed password is secure and almost impossible to convert back to the user's password
  */
+
 package model;
 
 import java.io.BufferedReader;
@@ -125,6 +134,22 @@ public class User {
                 }
                 writer.println(playlist.getName() + "|" + songList.toString());
             }
+            
+            writer.println("[song_tracker]");
+            SongTracker songTracker = libraryModel.getSongTracker();
+
+            writer.println("[recent_songs]");
+            for (Song song : songTracker.getRecentSongsPlaylist().getSongs()) {
+                writer.println(song.getSongTitle() + "|" + song.getArtist());
+            }
+            
+            writer.println("[play_counts]");
+            for (Map.Entry<Song, Integer> entry : songTracker.getCountMap().entrySet()) {
+                Song song = entry.getKey();
+                int count = entry.getValue();
+                writer.println(song.getSongTitle() + "|" + song.getArtist() + "|" + count);
+            }
+            
         } catch (IOException e) {
             System.out.println("Error saving user data: " + e.getMessage());
         }
@@ -142,6 +167,8 @@ public class User {
             List<Song> songs = new ArrayList<>();
             List<Album> albums = new ArrayList<>();
             List<Playlist> playlists = new ArrayList<>();
+            List<Song> recentSongs = new ArrayList<>();
+            Map<Song, Integer> playCounts = new HashMap<>();
             
             String section = null;
             while ((line = reader.readLine()) != null) {
@@ -211,6 +238,27 @@ public class User {
                             }
                             playlists.add(playlist);
                             break;
+                            
+                        case "song_tracker":
+                            break;
+                        case "recent_songs":
+                            String[] recentParts = line.split("\\|");
+                            String recentTitle = recentParts[0];
+                            String recentArtist = recentParts[1];
+                            Song recentSong = songMap.get(recentTitle + "|" + recentArtist);
+                            if (recentSong != null) {
+                                recentSongs.add(recentSong);
+                            }
+                            break;
+                        case "play_counts":
+                            String[] countParts = line.split("\\|");
+                            String countTitle = countParts[0];
+                            String countArtist = countParts[1];
+                            int countValue = Integer.parseInt(countParts[2]);
+                            Song countSong = songMap.get(countTitle + "|" + countArtist);
+                            if (countSong != null) {
+                                playCounts.put(countSong, countValue);
+                            }
                     }
                 }
             }
@@ -222,6 +270,11 @@ public class User {
             user.libraryModel.setSongs(songs);
             user.libraryModel.setAlbums(albums);
             user.libraryModel.setPlaylists(playlists);
+            
+            SongTracker songTracker = user.libraryModel.getSongTracker();
+            songTracker.setRecentSongs(recentSongs);
+            songTracker.setPlayCounts(playCounts);
+            songTracker.updatePlaylists();
             return user;
         } catch (IOException e) {
             System.out.println("Error loading user data: " + e.getMessage());

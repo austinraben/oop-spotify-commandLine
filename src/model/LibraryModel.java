@@ -1,10 +1,53 @@
-// Part 3:
-// 
+/*
+ * A User has a LibraryModel
+ * A LibraryModel has the following data structures:
+ *    - List<Song>, List<Album>, List<Playlist>
+ *          - Ensures encapsulation so that internal data structures are hidden
+ *    - ArrayList<>:
+ *          - Resizable array implemantion of list for data changes
+ *
+ *
+ * Encapsulation:
+ *     - Internal data structures are private and returns defensive copies through getters
+ *     - Any modifications are controlled through public methods
+ * Input Validation:
+ *     - addSong(), addAlbum(), addPlaylist():
+ *        - Verifies the item exists in MusicStore, returns true if success, false otherwise
+ *     - removeSong(), removeAlbum():
+ *         - Uses if-statements to check for matches before removal
+ * Avoidance of Anti-Patterns:
+ *     - Avoids 'God Class'
+ *     - Primitive Obsession - using appropriate types
+ *        - We use meaningful types like the Rating enum instead of plain integers for rating value
+ *     - Duplicated Code - 
+ *        - Overloaded removeSong to handle different situations in different contexts
+ *        - The frontend uses methods from the backend to prevent duplicated algorithms
+ *     - Temporary Field 
+ *        - we do not define instance variables unless they are consistently across the class
+ *     - Escaping References - 
+ *        - In all getter methods for lists, we return a copy instead of the original reference
+ * Design Patterns:
+ *     - Song: Uses 'Strategy' pattern to define different ways of sorting songs
+ *        - these Comparators are passed to Collections.sort() when sorting by title,artist,rating
+ *     - Each class has private instance variables and public methods
+ *     - Constructors make each class unique -- user has an overloaded constructor
+ *     - Classes are well-encapsulated
+ * Composition:
+ *     - Each User has a LibraryModel
+ *     - Each LibraryModel has the same MusicStore with the same HashMap of data read in
+ *     - Each LibraryModel has a SongTracker to track that User's played songs
+ *     - Each LibraryModel has a list of Songs, Albums, and Playlists unique to him/her
+ * No inheritance used--no need for an 'is a' relationship
+ * Polymorpishm 
+ *    - method overloading in the Playlist and Album class with removeSong()
+ *    - method overriding of Object's toString() and equals() in Song, Album, and Playlist
+ */
 
 package model;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class LibraryModel {
@@ -23,18 +66,53 @@ public class LibraryModel {
 	}
 	
 	/*
-	 * Add methods to add song/album/playlist to Library
+	 * Add Song to LibraryModel given title and artist
+	 *   - Returns: true if successful, false is not found in MusicStore or already added
+	 * LA2: Add the song's album to the Album list
 	 */
-	
 	public boolean addSong(String songTitle, String artist) {
 		Song song = musicStore.getSong(songTitle, artist);
 		if (song != null && !songs.contains(song)) {
 			songs.add(song);
+			String albumTitle = song.getAlbumTitle();
+			if (albumTitle != null) {
+				Album libraryAlbum = getLibraryAlbumByTitle(albumTitle);
+	            if (libraryAlbum == null) {
+	  
+	                List<Song> albumSongs = new ArrayList<>();
+	                albumSongs.add(song);
+	                Album originalAlbum = musicStore.getAlbum(albumTitle, artist);
+	                if (originalAlbum != null) {
+	                    libraryAlbum = new Album(originalAlbum.getAlbumTitle(), originalAlbum.getArtist(),originalAlbum.getGenre(), String.valueOf(originalAlbum.getYear()), albumSongs);
+	                    albums.add(libraryAlbum);
+	                }
+	            } 
+	            else {
+	            	
+	                if (!libraryAlbum.getSongs().contains(song)) {
+	                    libraryAlbum.getSongs().add(song);
+	                }
+	            }
+			}
 			return true;
 		}
 		return false;
 	}
 	
+	private Album getLibraryAlbumByTitle(String title) {
+		for(Album album: albums) {
+			if(album.getAlbumTitle().equalsIgnoreCase(title)) {
+				return album;
+			}
+		}
+		return null; 
+	}
+	
+	/*
+	 * Add Album to LibraryModel given album title and artist
+	 * Also add all of the Songs in the corresponding album
+	 *   - Returns: true if successful, false is not found in MusicStore or already added
+	 */
 	public boolean addAlbum(String albumTitle, String artist) {
 		Album album = musicStore.getAlbum(albumTitle, artist);
 		if (album != null && !albums.contains(album)) {
@@ -50,6 +128,10 @@ public class LibraryModel {
 		return false;
 	}
 	
+	/*
+	 * Add Playlist to LibraryModel given playlist
+	 *   - Returns: true if successful, false is already added
+	 */
 	public boolean addPlaylist(Playlist playlist) {
 	    if (playlist != null && !playlists.contains(playlist)) {
 	        playlists.add(playlist);
@@ -59,8 +141,7 @@ public class LibraryModel {
 	}
 	
 	/*
-	 * Four search methods below to search Library for song/album by song/artist
-	 * One additional search method to search Playlist by name
+	 * Methods to search the LibraryModel for data information
 	 */
 	
 	public List<Song> searchSongByTitle(String title) {
@@ -95,23 +176,60 @@ public class LibraryModel {
 	    }
 	    return null;
 	}
+	public List<Song> searchSongsByGenre(String genre){
+		List<Song> genreList = new ArrayList<>();
+		String genreTitle = genre.toUpperCase();
+		for(Song song : songs) {
+			String albumTitle = song.getAlbumTitle();
+			if(albumTitle != null) {
+				Album album = musicStore.getAlbum(albumTitle, song.getArtist());
+				if (album != null) {
+					String songGenre = album.getGenre().toUpperCase();
+				
+                    switch (genreTitle) {
+                        case "POP":
+                            if (songGenre.equals("POP")) {
+                                genreList.add(song);
+                            }
+                            break;
+                        case "ALTERNATIVE":
+                            if (songGenre.equals("ALTERNATIVE")) {
+                                genreList.add(song);
+                            }
+                            break;
+                        case "COUNTRY":
+                            if (songGenre.equals("COUNTRY")) {
+                                genreList.add(song);
+                            }
+                            break;
+                        case "LATIN":
+                            if (songGenre.equals("LATIN")) {
+                                genreList.add(song);
+                            }
+                            break;
+                        case "ROCK":
+                            if (songGenre.equals("ROCK")) {
+                                genreList.add(song);
+                            }
+                            break;
+                        case "SINGER/SONGWRITER":
+                            if (songGenre.equals("SINGER/SONGWRITER")) {
+                                genreList.add(song);
+                            }
+                            break;
+                       default:
+                    	   break;
+                    }
+				}
+			}
+		}
+		return genreList;
+	}
 	
 	/*
-	 * Getter methods to get information from Library data structures
+	 * Getter methods to get data from the LibraryModel
+	 *    - Maintains encapsulation by returning copies of data structures
 	 */
-	
-	public SongTracker getSongTracker() {
-		return songTracker;
-	}
-	
-	public List<String> getSongTitles() {
-		List<String> songTitles = new ArrayList<>();
-		for (Song song : songs) {
-			songTitles.add(song.getSongTitle());
-			}
-		return songTitles;
-	}
-	
 	public List<Song> getSongs() {
 	    return new ArrayList<>(songs);
 	}
@@ -119,10 +237,22 @@ public class LibraryModel {
     public List<Album> getAlbums() {
         return new ArrayList<>(albums);
     }
-
+    
     public List<Playlist> getPlaylists() {
         return new ArrayList<>(playlists);
     }
+    
+	public SongTracker getSongTracker() {
+		return songTracker;
+	}
+    
+	public List<String> getSongTitles() {
+		List<String> songTitles = new ArrayList<>();
+		for (Song song : songs) {
+			songTitles.add(song.getSongTitle());
+			}
+		return songTitles;
+	}
 	
 	public List<String> getAlbumTitles() {
 		List<String> albumTitles = new ArrayList<>();
@@ -161,25 +291,149 @@ public class LibraryModel {
 		return favoriteSongs;
 	}
 	
+    public List<Song> getShuffledSongs() {
+    	List<Song> shuffled = new ArrayList<>(songs);
+    	Collections.shuffle(shuffled);
+    	return shuffled;
+    }
+	
 	public List<Playlist> getAllPlaylistsForDisplay() {
 	    List<Playlist> allPlaylists = new ArrayList<>(playlists); 
 	    allPlaylists.add(songTracker.getRecentSongsPlaylist());   
 	    allPlaylists.add(songTracker.getFrequentSongsPlaylist());
+	    allPlaylists.add(getFavoriteSongsPlaylist());
+	    allPlaylists.add(getTopRatedPlaylist());
+	    List<Playlist> genrePlaylists = getGenrePlaylists();
+	    if (!genrePlaylists.isEmpty()) {
+	        allPlaylists.addAll(genrePlaylists);
+	    }	    
 	    return allPlaylists;
 	}
 	
+    public Album getAlbumFromSong(Song song) {
+    	if(song == null || song.getAlbumTitle() == null) {
+    		return null;
+    	}
+    	List<Album> albumFromSong = musicStore.searchAlbumByTitle(song.getAlbumTitle());
+    	if (albumFromSong.isEmpty()) {
+    		return null;
+    	}
+    	else {
+    		return albumFromSong.get(0);
+    	}
+    }
+	
 	/*
-	 * Setters for loading User information (User.load())
+	 * Setters for LibraryModel data structures
+	 *    - Used in User's load() method
+	 *    - Maintains encapsulation by returning copies of data structures
 	 */
     public void setSongs(List<Song> songs) {
-        this.songs = songs;
+        this.songs = new ArrayList<>(songs);
     }
 
     public void setAlbums(List<Album> albums) {
-        this.albums = albums;
+        this.albums = new ArrayList<>(albums);
     }
 
     public void setPlaylists(List<Playlist> playlists) {
-        this.playlists = playlists;
+        this.playlists = new ArrayList<>(playlists);
+    }
+    
+    /*
+     * Remove Song from LibraryModel and its data structrues
+     */
+    public void removeSong(Song song) {
+    	for(int i = 0; i < songs.size(); i++) {
+    		Song newSong = songs.get(i);
+    		if (newSong.getSongTitle().equalsIgnoreCase(song.getSongTitle()) && 
+    		newSong.getArtist().equalsIgnoreCase(song.getArtist())){
+    			songs.remove(i);
+    			i--;
+    		}
+    	}
+    	for (Playlist playlist : playlists) {
+            playlist.removeSong(song.getSongTitle(), song.getArtist());
+        }
+    	for (Album album : albums) {
+            album.removeSong(song.getSongTitle(), song.getArtist());
+        }
+    }
+    
+    /*
+     * Remove Album and its Songs from LibraryModel and its data structrues
+     */
+    public void removeAlbum(Album album) {
+    	albums.remove(album);
+    	for(Song song: album.getSongs()) {
+    		removeSong(song);
+    	}
+    }
+    
+    /*
+     * LA2: 
+     * Methods to create automatic playlists for favorite songs, genre (if >=10), and top rated (4-5)
+     */
+    public Playlist getFavoriteSongsPlaylist(){
+    	Playlist favorites = new Playlist("Favorite Songs");
+    	for(Song song: songs) {
+    		boolean isRatedFive = song.getRating().isPresent() && song.getRating().get().getRatingValue() == 5;
+    		if (song.isFavorite() || isRatedFive) {
+                favorites.addSong(song);
+            }
+        }
+        return favorites;
+    }
+    
+    public Playlist getTopRatedPlaylist() {
+        Playlist topRated = new Playlist("Top Rated");
+        for (Song song : songs) {
+            if (song.getRating().isPresent()) {
+                int ratingValue = song.getRating().get().getRatingValue();
+                if (ratingValue >= 4) {
+                    topRated.addSong(song);
+                }
+            }
+        }
+        return topRated;
+    }
+    
+    public List<Playlist> getGenrePlaylists() {
+        List<Playlist> genrePlaylists = new ArrayList<>();
+        String[] genres = {"POP", "ALTERNATIVE", "COUNTRY", "LATIN", "ROCK", "SINGER/SONGWRITER"};
+        for (String genre : genres) {
+            List<Song> genreSongs = searchSongsByGenre(genre);
+            if (genreSongs.size() >= 10) {
+                Playlist genrePlaylist = new Playlist(genre);
+                for (Song song : genreSongs) {
+                    genrePlaylist.addSong(song);
+                }
+                genrePlaylists.add(genrePlaylist);
+            }
+        }
+        return genrePlaylists;
+    }
+    
+    /*
+     * LA2: 
+     * Methods to get sorted List of Songs by Song's characteristics
+     */
+    
+    public List<Song> getSongsSortedByTitle() {
+        List<Song> sortedList = new ArrayList<>(songs);
+        Collections.sort(sortedList, Song.titleFirstComparator());
+        return sortedList;
+    }
+
+    public List<Song> getSongsSortedByArtist() {
+        List<Song> sortedList = new ArrayList<>(songs);
+        Collections.sort(sortedList, Song.artistFirstComparator());
+        return sortedList;
+    }
+
+    public List<Song> getSongsSortedByRating() {
+        List<Song> sortedList = new ArrayList<>(songs);
+        Collections.sort(sortedList, Song.ratingFirstComparator());
+        return sortedList;
     }
 }

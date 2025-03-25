@@ -1,13 +1,12 @@
-// Part 3:
-
 package model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Playlist {
 	private String name;
-	private ArrayList<Song> songs;
+	private List<Song> songs;
 	
 	public Playlist(String name) {
 		this.name = name;
@@ -18,31 +17,51 @@ public class Playlist {
 		return name;
 	}
 	
-	/*
-	 * @pre: name != null
-	 */
+	public List<Song> getSongs() {
+        return new ArrayList<>(songs);  
+    }
+	
+	// Used to update automatic Playlists in SongTracker
+	public void getSongList(List<Song> songList) {
+		songs.clear();
+		songs.addAll(songList);
+	}
+	
+	public List<Song> getShuffledSongs() {
+    	List<Song> shuffled = new ArrayList<>(songs);
+    	Collections.shuffle(shuffled);
+    	return shuffled;
+    }
+	
 	public void setName(String name) {
 		if (!name.trim().isEmpty()) {
 			this.name = name;
 		}
 	}
-	
-	/*
-	 * @pre: song != null
-	 */
+
 	public void addSong(Song song) {
 		if (!songs.contains(song)) {
 			songs.add(song);
 		}
 	}
 	
+	/*
+	 * Overloaded methods for removing songs from a Playlist
+	 */
+	
 	public void removeSong(Song song) {
 		songs.remove(song);
 	}
 	
-	public List<Song> getSongs() {
-        return new ArrayList<>(songs);  
-    }
+	public void removeSong(String title, String artist) {
+		for(int i = 0; i< songs.size();i++) {
+			Song newSong = songs.get(i);
+			if(newSong.getSongTitle().equalsIgnoreCase(title) && newSong.getArtist().equalsIgnoreCase(artist)) {
+				songs.remove(i);
+				i--;	
+			}
+		}
+	}
 	
 	@Override
     public boolean equals(Object o) {
@@ -60,11 +79,6 @@ public class Playlist {
         Playlist other = (Playlist) o;
         return name.equalsIgnoreCase(other.name);    
      }
-	
-	public void getSongList(List<Song> songList) {
-		songs.clear();
-		songs.addAll(songList);
-	}
 	
 	@Override
     public String toString() {

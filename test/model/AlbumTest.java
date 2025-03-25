@@ -62,8 +62,8 @@ public class AlbumTest {
                "Genre: Pop\n" +
                "Year: 2008\n" +
                "Songs:\n" +
-               "- Song Title: Daydreamer, Artist: Adele, Album: 19\n" +
-               "- Song Title: Best for Last, Artist: Adele, Album: 19\n";
+               "- Daydreamer by Adele from '19'\n" +
+               "- Best for Last by Adele from '19'\n";
 
        assertEquals(expectedToString, album.toString());
    }

@@ -1,1 +1,1 @@
-This is LA2
+Run as java application from src/view/UserInterface.java
